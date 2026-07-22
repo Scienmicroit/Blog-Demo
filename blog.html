@@ -1,0 +1,4632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scienmicroit</title>
+    <link rel="icon" type="image/png" href="smile-round.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #159c9a;
+            --primary-light: #22c7b8;
+            --secondary: #2687c7;
+            --accent: #65d0b3;
+            --bg-dark: #f8fffb;
+            --bg-card: rgba(255, 255, 255, 0.36);
+            --text-primary: #17212b;
+            --text-secondary: #536371;
+            --glass-bg: rgba(255, 255, 255, 0.34);
+            --glass-border: rgba(36, 178, 174, 0.38);
+            --glass-highlight: rgba(79, 209, 197, 0.58);
+            --seg-on: #0c0d08;
+            --seg-off: rgba(12, 13, 8, 0.055);
+            --heart-color: #d94686;
+            --bubble-color: #d94686;
+        }
+
+        * {
+            cursor: none !important;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background:
+                radial-gradient(circle at 14% 18%, rgba(78, 205, 196, 0.42), transparent 34%),
+                radial-gradient(circle at 88% 78%, rgba(34, 151, 190, 0.34), transparent 38%),
+                linear-gradient(135deg, #f7fbf1 0%, #e5f4ef 48%, #f8fbef 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .flat-cursor {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 22px;
+            height: 24px;
+            z-index: 9999;
+            pointer-events: none;
+            transform: translate3d(-80px, -80px, 0);
+            transition: opacity 0.18s ease;
+            will-change: transform;
+        }
+
+        .flat-cursor svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+            transform: rotate(145deg);
+            transform-origin: 50% 50%;
+        }
+
+        .flat-cursor .cursor-fill {
+            fill: #fff;
+            transition: fill 0.16s ease, stroke 0.16s ease;
+            stroke: #159c9a;
+            stroke-width: 1.65;
+            stroke-linejoin: round;
+            stroke-linecap: round;
+            paint-order: stroke fill;
+        }
+
+        .flat-cursor.is-hover .cursor-fill {
+            fill: #f0fdfa;
+            stroke: #0d9488;
+        }
+
+        .flat-cursor.is-hidden {
+            opacity: 0;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(110px);
+            opacity: 0.48;
+            left: var(--blob-x, 0vw);
+            top: var(--blob-y, 0vh);
+            animation: float var(--blob-duration, 34s) infinite ease-in-out;
+            animation-delay: var(--blob-delay, 0s);
+            will-change: transform;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: #4ed5c7;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: #2aa6c5;
+        }
+
+        .blob-3 {
+            width: 350px;
+            height: 350px;
+            background: #7de0b1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(var(--drift-x1, 24px), var(--drift-y1, -18px)) scale(1.035); }
+            50% { transform: translate(var(--drift-x2, -18px), var(--drift-y2, 22px)) scale(0.975); }
+            75% { transform: translate(var(--drift-x3, 18px), var(--drift-y3, 16px)) scale(1.02); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .layout {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            height: 700px;
+        }
+
+        .glass {
+            --shift-x: 0px;
+            --shift-y: 0px;
+            --tilt-x: 0deg;
+            --tilt-y: 0deg;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.46), rgba(229, 255, 250, 0.20)),
+                var(--glass-bg);
+            backdrop-filter: blur(30px) saturate(1.32);
+            -webkit-backdrop-filter: blur(30px) saturate(1.32);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow:
+                0 18px 48px rgba(31, 126, 142, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.72),
+                inset 0 -1px 0 rgba(79, 209, 197, 0.14);
+            transition: transform 0.15s ease,
+                        border-color 0.28s ease,
+                        box-shadow 0.32s ease;
+            position: relative;
+            transform: perspective(800px) translate(var(--shift-x), var(--shift-y)) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+        }
+
+        .glass:hover {
+            transform: perspective(800px) translate(var(--shift-x), var(--shift-y)) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg)) scale(1.02);
+            border-color: var(--primary-light);
+            box-shadow:
+                0 0 0 1px var(--glass-highlight),
+                0 0 22px rgba(64, 205, 196, 0.24),
+                0 18px 48px rgba(31, 126, 142, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.78),
+                inset 0 -1px 0 rgba(79, 209, 197, 0.18);
+        }
+
+        .glass.side-dock:hover,
+        .glass.returning-home:hover {
+            transform: translate(var(--shift-x), var(--shift-y));
+            border-color: var(--glass-border);
+            box-shadow:
+                0 18px 48px rgba(31, 126, 142, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.72),
+                inset 0 -1px 0 rgba(79, 209, 197, 0.14);
+        }
+
+        .glass.home-hover-suppressed:hover {
+            transform: perspective(800px) translate(var(--shift-x), var(--shift-y)) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+            border-color: var(--glass-border);
+            box-shadow:
+                0 18px 48px rgba(31, 126, 142, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.72),
+                inset 0 -1px 0 rgba(79, 209, 197, 0.14);
+        }
+
+        .layout > .glass {
+            animation: card-pop-in 0.56s ease-out backwards;
+        }
+
+        .layout > .glass:nth-child(1) { animation-delay: 0.00s; }
+        .layout > .glass:nth-child(2) { animation-delay: 0.12s; }
+        .layout > .glass:nth-child(3) { animation-delay: 0.24s; }
+        .layout > .glass:nth-child(4) { animation-delay: 0.36s; }
+        .layout > .glass:nth-child(5) { animation-delay: 0.48s; }
+        .layout > .glass:nth-child(6) { animation-delay: 0.60s; }
+        .layout > .glass:nth-child(7) { animation-delay: 0.72s; }
+        .layout > .glass:nth-child(8) { animation-delay: 0.84s; }
+        .layout > .glass:nth-child(9) { animation-delay: 0.96s; }
+        .layout > .glass:nth-child(10) { animation-delay: 1.08s; }
+
+        .layout > .glass.detail-transition {
+            transition:
+                transform 0.46s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.34s ease,
+                filter 0.34s ease,
+                border-color 0.28s ease,
+                box-shadow 0.32s ease;
+        }
+
+        .layout > .glass.detail-hidden,
+        .layout > .glass.detail-hidden:hover {
+            opacity: 0;
+            filter: blur(12px);
+            pointer-events: none;
+            transform: translate(var(--shift-x), var(--shift-y)) scale(0.64);
+        }
+
+        .profile-card.side-dock {
+            position: fixed;
+            z-index: 30;
+            margin: 0;
+            min-height: 0;
+            justify-content: flex-start;
+            transition:
+                left 0.64s cubic-bezier(0.22, 1, 0.36, 1),
+                top 0.64s cubic-bezier(0.22, 1, 0.36, 1),
+                width 0.64s cubic-bezier(0.22, 1, 0.36, 1),
+                height 0.64s cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 0.64s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.32s ease,
+                border-color 0.28s ease,
+                box-shadow 0.32s ease;
+        }
+
+        .profile-card.side-dock.returning-home {
+            justify-content: center;
+        }
+
+        @keyframes card-pop-in {
+            0% {
+                opacity: 0;
+                filter: blur(10px);
+                transform: translate(var(--shift-x), calc(var(--shift-y) + 26px)) scale(0.78);
+            }
+            40% {
+                opacity: 1;
+                filter: blur(0);
+                transform: translate(var(--shift-x), var(--shift-y)) scale(1.02);
+            }
+            70% {
+                transform: translate(var(--shift-x), var(--shift-y)) scale(0.91);
+                animation-timing-function: ease-out;
+            }
+            100% {
+                opacity: 1;
+                filter: blur(0);
+                transform: translate(var(--shift-x), var(--shift-y)) scale(1);
+            }
+        }
+
+        .profile-card {
+            padding: 28px;
+            width: 260px;
+            height: 380px;
+            left: 0;
+            top: 20px;
+        }
+
+        .greeting-card {
+            padding: 40px 32px;
+            width: 340px;
+            height: 220px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            left: 290px;
+            top: 80px;
+        }
+
+        .time-card {
+            padding: 20px 24px;
+            width: 260px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            left: 660px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .weather-card {
+            padding: 14px 18px;
+            width: 260px;
+            height: 70px;
+            left: 660px;
+            top: 110px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .weather-content {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr);
+            grid-template-rows: auto auto;
+            align-items: center;
+            column-gap: 12px;
+            row-gap: 2px;
+        }
+
+        .weather-icon {
+            grid-row: 1 / 3;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .weather-top,
+        .weather-bottom {
+            min-width: 0;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .weather-location,
+        .weather-condition {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .weather-location {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .weather-temp {
+            flex: 0 0 auto;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .weather-condition {
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+
+        .weather-updated {
+            flex: 0 0 auto;
+            font-size: 10px;
+            line-height: 1;
+            color: var(--text-secondary);
+            opacity: 0.72;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .weather-error {
+            display: none;
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .weather-card.is-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weather-card.is-error .weather-content {
+            display: none;
+        }
+
+        .weather-card.is-error .weather-error {
+            display: block;
+        }
+
+        .calendar-card {
+            padding: 24px;
+            width: 260px;
+            height: 260px;
+            left: 660px;
+            top: 110px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--glass-border);
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .profile-status {
+            font-size: 12px;
+            color: var(--primary-light);
+            opacity: 0.8;
+        }
+
+        .menu-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+
+        .menu-shell {
+            position: relative;
+        }
+
+        .menu-indicator,
+        .menu-hover-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 0;
+            width: 100%;
+            height: var(--menu-indicator-height, 52px);
+            border-radius: 18px;
+            pointer-events: none;
+            transform: translateY(var(--menu-indicator-y, 0px));
+            will-change: transform, height;
+        }
+
+        .menu-hover-indicator {
+            opacity: 0;
+            transition: opacity 0.16s ease;
+        }
+
+        .menu-shell.is-hovering .menu-hover-indicator {
+            opacity: 1;
+        }
+
+        .menu-indicator::before,
+        .menu-hover-indicator::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            transform-origin: center;
+            transition: transform 0.15s ease;
+            will-change: transform;
+        }
+
+        .menu-indicator::before {
+            background: var(--primary);
+        }
+
+        .menu-hover-indicator::before {
+            border: 2px solid rgba(79, 230, 218, 0.82);
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.18),
+                0 0 24px rgba(79, 230, 218, 0.34);
+        }
+
+        .menu-indicator.is-pressing::before,
+        .menu-hover-indicator.is-pressing::before {
+            transform: scale(1.02);
+        }
+
+        .menu-list {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .menu-item {
+            margin-bottom: 8px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: 52px;
+            padding: 0 16px;
+            border-radius: 18px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+            transition: color 0.2s ease;
+            background: transparent;
+        }
+
+        .menu-link:hover {
+            color: var(--text-primary);
+        }
+
+        .menu-link.active {
+            color: var(--bg-dark);
+        }
+
+        .menu-link.is-preview:not(.active) {
+            color: var(--text-primary);
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 20px;
+            line-height: 1;
+        }
+
+        .menu-text {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            line-height: 1.15;
+            transform: translateY(1px);
+        }
+
+        .greeting-card {
+            padding: 40px 32px;
+            width: 340px;
+            height: 240px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            left: 290px;
+            top: 160px;
+        }
+
+        .greeting-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            border: 3px solid var(--glass-border);
+            margin-bottom: 20px;
+        }
+
+        .greeting-text {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .greeting-name {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .greeting-sub {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .calendar-card {
+            padding: 24px;
+            width: 260px;
+            height: 260px;
+            left: 660px;
+            top: 110px;
+        }
+
+        .time-display {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .seg-digit {
+            position: relative;
+            width: 28px;
+            height: 48px;
+        }
+
+        .seg-colon {
+            width: 10px;
+            height: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .seg-colon-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--seg-on);
+        }
+
+        .seg {
+            position: absolute;
+            background: var(--seg-off);
+            border-radius: 2px;
+            transition: background 0.15s, box-shadow 0.15s;
+        }
+
+        .seg.on {
+            background: var(--seg-on);
+        }
+
+        .seg-h {
+            width: 20px;
+            height: 4px;
+            left: 4px;
+        }
+
+        .seg-v {
+            width: 4px;
+            height: 18px;
+        }
+
+        .seg-a { top: 2px; left: 4px; }
+        .seg-b { top: 6px; right: 2px; }
+        .seg-c { bottom: 6px; right: 2px; }
+        .seg-d { bottom: 2px; left: 4px; }
+        .seg-e { bottom: 6px; left: 2px; }
+        .seg-f { top: 6px; left: 2px; }
+        .seg-g { top: 50%; left: 4px; transform: translateY(-50%); }
+
+        .likes-card {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            left: 660px;
+            top: 460px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .likes-heart {
+            color: var(--heart-color);
+            font-size: 18px;
+            transition: transform 0.2s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .likes-heart.pop {
+            animation: heart-pop 0.3s ease;
+        }
+
+        @keyframes heart-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        .plus-bubble {
+            position: absolute;
+            top: -12px;
+            right: -16px;
+            color: var(--bubble-color);
+            font-size: 14px;
+            font-weight: 700;
+            pointer-events: none;
+            animation: bubble-up 0.8s ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes bubble-up {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-40px) scale(0.6); }
+        }
+
+        .float-heart {
+            position: absolute;
+            color: var(--heart-color);
+            font-size: 14px;
+            pointer-events: none;
+            animation: float-up 0.8s ease-out forwards;
+        }
+
+        @keyframes float-up {
+            0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--hx), -50px) scale(0.4) rotate(var(--hr)); }
+        }
+
+        .calendar-card {
+            padding: 24px;
+            width: 260px;
+            height: 260px;
+            left: 660px;
+            top: 120px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 1.35;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            opacity: 0.6;
+        }
+
+        .weekday.active {
+            color: var(--primary-light);
+            opacity: 1;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .day {
+            text-align: center;
+            font-size: 13px;
+            padding: 8px 0;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .day:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .day.today {
+            background: var(--primary);
+            color: var(--bg-dark);
+            font-weight: 600;
+        }
+
+        .day.empty {
+            visibility: hidden;
+        }
+
+        .articles-card {
+            padding: 24px;
+            width: 260px;
+            height: 150px;
+            left: 0;
+            top: 420px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .article-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .article-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .article-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .article-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .article-title {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .article-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .article-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .social-card {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            width: fit-content;
+            left: 290px;
+            top: 320px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .social-link-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .recommend-card {
+            padding: 24px;
+            width: 260px;
+            height: 170px;
+            left: 290px;
+            top: 420px;
+        }
+
+        .recommend-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .recommend-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .recommend-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+
+        .recommend-stats {
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .music-card {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 240px;
+            left: 660px;
+            top: 400px;
+            touch-action: pan-y;
+            user-select: none;
+        }
+
+        .music-note {
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+            border-radius: 3px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: var(--bg-dark);
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .music-note img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .music-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .music-heading {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 2px;
+        }
+
+        .music-title {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .music-heading .music-title {
+            flex: 1;
+            min-width: 0;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .music-random {
+            width: 22px;
+            height: 22px;
+            flex: 0 0 22px;
+            padding: 0;
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.38);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            transition: transform 0.18s ease,
+                        color 0.2s ease,
+                        background 0.2s ease,
+                        border-color 0.2s ease,
+                        box-shadow 0.2s ease;
+        }
+
+        .music-random svg {
+            width: 13px;
+            height: 13px;
+            display: block;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .music-random:hover {
+            transform: translateY(-1px);
+            color: #ffffff;
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(21, 156, 154, 0.24);
+        }
+
+        .music-random:active {
+            transform: scale(0.92);
+        }
+
+        .music-random:focus-visible {
+            outline: 2px solid var(--primary-light);
+            outline-offset: 2px;
+        }
+
+        .card-title,
+        .article-title,
+        .article-desc,
+        .article-date,
+        .recommend-title,
+        .recommend-desc,
+        .recommend-stats,
+        .music-title,
+        .greeting-text,
+        .greeting-name,
+        .greeting-sub {
+            margin-top: 0;
+        }
+
+        .music-progress-shell {
+            position: relative;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            height: 16px;
+            margin-top: 3px;
+            margin-bottom: -5px;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .music-progress {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            margin-top: 0;
+            overflow: hidden;
+            cursor: pointer;
+            touch-action: none;
+            user-select: none;
+            transform-origin: center;
+            transition: background 0.2s ease, opacity 0.2s ease;
+        }
+
+        .music-progress-bar {
+            height: 100%;
+            width: 100%;
+            background: #087a78;
+            border-radius: inherit;
+            transform: scaleX(var(--music-progress-ratio, 0));
+            transform-origin: left center;
+            will-change: transform;
+        }
+
+        .music-progress:hover {
+            background: rgba(255, 255, 255, 0.26);
+        }
+
+        .music-progress.is-dragging {
+            background: rgba(255, 255, 255, 0.56);
+        }
+
+        .music-progress-expansion {
+            position: absolute;
+            z-index: 2;
+            left: var(--progress-origin-left, 0px);
+            top: var(--progress-origin-top, 0px);
+            width: var(--progress-origin-width, 0px);
+            height: var(--progress-origin-height, 6px);
+            border: 1px solid rgba(21, 156, 154, 0.56);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transition:
+                left 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+                top 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+                width 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+                height 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.16s ease,
+                box-shadow 0.48s ease;
+        }
+
+        .music-progress-expansion-fill {
+            position: absolute;
+            inset: 0;
+            background: rgba(8, 122, 120, 0.42);
+            transform: scaleX(var(--music-progress-ratio, 0));
+            transform-origin: left center;
+            transition: transform 0.12s linear;
+        }
+
+        .music-card.progress-expanded .music-progress-expansion {
+            z-index: 5;
+            left: -1px;
+            top: -1px;
+            width: calc(100% + 2px);
+            height: calc(100% + 2px);
+            border-radius: inherit;
+            opacity: 1;
+            pointer-events: auto;
+            cursor: pointer;
+            touch-action: none;
+            box-shadow:
+                inset 0 0 0 1px rgba(79, 209, 197, 0.22),
+                0 10px 28px rgba(31, 126, 142, 0.16);
+        }
+
+        .music-card.progress-expanded .music-progress {
+            opacity: 0;
+        }
+
+        .music-note,
+        .music-info,
+        .music-play,
+        .music-dots {
+            z-index: 3;
+        }
+
+        .music-note,
+        .music-info,
+        .music-dots {
+            transition: filter 0.28s ease, opacity 0.28s ease;
+        }
+
+        .music-card.progress-expanded .music-note,
+        .music-card.progress-expanded .music-info,
+        .music-card.progress-expanded .music-play,
+        .music-card.progress-expanded .music-dots {
+            filter: blur(5px);
+            opacity: 0.32;
+        }
+
+        .music-time {
+            margin-top: 6px;
+            font-size: 11px;
+            line-height: 1;
+            color: var(--text-secondary);
+            opacity: 0.68;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .card-title {
+            margin: 0 0 16px;
+        }
+
+        .greeting-text,
+        .greeting-name,
+        .article-title,
+        .article-desc,
+        .recommend-title,
+        .recommend-desc,
+        .music-title {
+            margin: 0 0 8px;
+        }
+
+        .greeting-sub,
+        .article-date,
+        .recommend-stats {
+            margin: 0;
+        }
+
+        .music-progress {
+            margin-top: 0;
+        }
+
+        .music-play {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-dark);
+            position: relative;
+            flex: 0 0 40px;
+            overflow: hidden;
+            transition: transform 0.22s ease,
+                        background 0.22s ease,
+                        box-shadow 0.22s ease,
+                        filter 0.28s ease,
+                        opacity 0.28s ease;
+        }
+
+        .music-play:hover {
+            transform: scale(1.1);
+        }
+
+        .music-play-icon {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 1.25, 0.32, 1);
+        }
+
+        .music-play-icon.play {
+            transform: translate(-47%, -50%) scale(1);
+        }
+
+        .music-play-icon.pause {
+            gap: 3px;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.55) rotate(-20deg);
+        }
+
+        .music-play-icon.play::before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 9px solid currentColor;
+        }
+
+        .music-play-icon.pause::before,
+        .music-play-icon.pause::after {
+            content: '';
+            width: 4px;
+            height: 13px;
+            border-radius: 2px;
+            background: currentColor;
+        }
+
+        .music-play.is-playing .music-play-icon.play {
+            opacity: 0;
+            transform: translate(-47%, -50%) scale(0.55) rotate(20deg);
+        }
+
+        .music-play.is-playing .music-play-icon.pause {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        }
+
+        .music-dots {
+            position: absolute;
+            left: 50%;
+            bottom: 6px;
+            display: flex;
+            gap: 5px;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .music-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            opacity: 0.28;
+            transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+        }
+
+        .music-dot.active {
+            background: var(--primary);
+            opacity: 1;
+            transform: scale(1.16);
+        }
+
+        .likes-count {
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 260px 340px 260px;
+            grid-template-rows: 124px 152px 124px 92px 126px 72px;
+            grid-template-areas:
+                "profile greeting time"
+                "profile greeting calendar"
+                "profile social calendar"
+                "articles social music"
+                "articles recommend likes"
+                ". recommend .";
+            gap: 24px 30px;
+            height: auto;
+            max-width: 920px;
+            align-items: stretch;
+        }
+
+        .profile-card,
+        .greeting-card,
+        .time-card,
+        .weather-card,
+        .calendar-card,
+        .articles-card,
+        .social-card,
+        .recommend-card,
+        .music-card,
+        .likes-card {
+            left: auto;
+            top: auto;
+            width: 100%;
+            height: auto;
+        }
+
+        .profile-card {
+            grid-area: profile;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 448px;
+            --shift-y: 0px;
+        }
+
+        .greeting-card {
+            grid-area: greeting;
+            min-height: 244px;
+            --shift-y: 12px;
+        }
+
+        .time-card {
+            grid-area: time;
+            align-self: start;
+            min-height: 86px;
+            --shift-x: 0px;
+            transition: transform 0.15s ease, opacity 0.28s ease;
+        }
+
+        .weather-card {
+            position: absolute;
+            left: auto;
+            right: 0;
+            top: 110px;
+            width: 260px;
+            height: auto;
+            min-height: 86px;
+            --shift-x: 0px;
+            transition: transform 0.15s ease, opacity 0.28s ease;
+        }
+
+        .calendar-card {
+            grid-area: calendar;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 300px;
+            --shift-y: 72px;
+        }
+
+        .articles-card {
+            grid-area: articles;
+            --shift-y: 0px;
+        }
+
+        .social-card {
+            grid-area: social;
+            align-self: center;
+            justify-content: center;
+            --shift-y: 0px;
+        }
+
+        .recommend-card {
+            grid-area: recommend;
+            --shift-x: 0px;
+            min-height: 178px;
+        }
+
+        .music-card {
+            grid-area: music;
+            align-self: center;
+            --shift-x: 0px;
+            --shift-y: 72px;
+        }
+
+        .likes-card {
+            grid-area: likes;
+            align-self: start;
+            justify-self: start;
+            width: fit-content;
+            --shift-x: 0px;
+            --shift-y: 72px;
+        }
+
+        @media (max-width: 960px) {
+            .layout {
+                position: relative;
+                height: auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .glass {
+                position: relative !important;
+                left: auto !important;
+                top: auto !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 400px;
+                height: auto !important;
+            }
+
+        }
+
+        .timer-page {
+            --timer-final-width: 560px;
+            --timer-final-height: 420px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .timer-page.active {
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        .timer-page.opening {
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        .timer-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.34);
+            backdrop-filter: blur(18px) saturate(1.18);
+            -webkit-backdrop-filter: blur(18px) saturate(1.18);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .timer-page.active .timer-bg {
+            opacity: 1;
+        }
+
+        .timer-container {
+            max-width: 90vw;
+            padding: 36px;
+            position: absolute;
+            text-align: center;
+            left: var(--start-left);
+            top: var(--start-top);
+            width: var(--start-width);
+            height: var(--start-height);
+            border-radius: var(--start-radius);
+            overflow: hidden;
+            opacity: 1;
+            transform: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: left 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        top 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        width 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        height 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        border-radius 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        border-color 0.28s ease,
+                        box-shadow 0.32s ease,
+                        opacity 0.2s ease;
+        }
+
+        .timer-page .glass:hover {
+            border-color: rgba(79, 209, 197, 0.52);
+            box-shadow: 0 26px 78px rgba(25, 112, 126, 0.16),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.68),
+                        inset 0 -1px 0 rgba(87, 214, 199, 0.16);
+        }
+
+        .timer-page .glass:not(.timer-container):not(.records-card):hover {
+            transform: none;
+        }
+
+        .timer-page .timer-container {
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.50), rgba(223, 255, 250, 0.24)),
+                rgba(255, 255, 255, 0.28);
+            border-color: rgba(79, 209, 197, 0.42);
+            box-shadow: 0 28px 86px rgba(25, 112, 126, 0.17),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+                        inset 0 -1px 0 rgba(87, 214, 199, 0.18);
+            backdrop-filter: blur(36px) saturate(1.42);
+            -webkit-backdrop-filter: blur(36px) saturate(1.42);
+            transition: left 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        top 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        width 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        height 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        border-radius 0.45s cubic-bezier(0.34, 1.2, 0.64, 1),
+                        border-color 0.28s ease,
+                        opacity 0.2s ease,
+                        transform 0.2s ease,
+                        box-shadow 0.55s ease;
+        }
+
+        .timer-page .timer-container::before,
+        .records-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.05) 44%, rgba(57, 200, 190, 0.12));
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
+        }
+
+        .timer-page.active .timer-container:hover {
+            transform: scale(1.01);
+        }
+
+        .timer-page.active .timer-container:active {
+            transform: scale(0.99);
+            transition: transform 0.1s ease;
+        }
+
+        .timer-page .sw-btn {
+            transition: transform 0.2s ease, background 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+        }
+
+        .timer-page .sw-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .timer-page .sw-btn:active:not(:disabled) {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        .sw-btn:disabled {
+            opacity: 0.5;
+        }
+
+        .timer-page .timer-tab {
+            transition: transform 0.2s ease, background 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .timer-page .timer-tab:focus,
+        .timer-page .timer-tab:focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .timer-page .timer-tab:hover:not(.active) {
+            transform: scale(1.05);
+        }
+
+        .timer-page .timer-tab:active:not(.active) {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        .timer-page .timer-close {
+            transition: transform 0.2s ease, background 0.2s, color 0.2s;
+        }
+
+        .timer-page .timer-close:hover {
+            transform: scale(1.1);
+        }
+
+        .timer-page .timer-close:active {
+            transform: scale(0.9);
+            transition: transform 0.1s ease;
+        }
+
+        .timer-page .cd-group {
+            transition: transform 0.2s ease, background 0.2s;
+        }
+
+        .timer-page .cd-group:hover {
+            transform: scale(1.05);
+        }
+
+        .timer-page .cd-group.picking:hover {
+            transform: none;
+        }
+
+        .timer-page .cd-group:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        .timer-page .cd-wheel-item {
+            transition: transform 0.2s ease, background 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .timer-page .cd-wheel-item:hover {
+            transform: scale(1.08);
+        }
+
+        .timer-page .cd-wheel-item:active {
+            transform: scale(0.92);
+            transition: transform 0.1s ease;
+        }
+
+        .timer-clock-ghost {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            z-index: 1;
+            transition: opacity 0.28s ease;
+            pointer-events: none;
+        }
+
+        .timer-clock-ghost .time-display {
+            transform: scale(1);
+            transition: transform 0.45s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        .timer-content {
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.28s ease;
+        }
+
+        .timer-page.active .timer-container {
+            left: calc(50% - var(--timer-final-width) / 2);
+            top: calc(50% - var(--timer-final-height) / 2);
+            width: var(--timer-final-width);
+            height: var(--timer-final-height);
+            border-radius: 32px;
+            opacity: 1;
+            max-width: 90vw;
+        }
+
+        .timer-page.active.stopwatch-mode .timer-container {
+            left: calc(50% - 138px);
+        }
+
+        .timer-page.active.countdown-mode .timer-container {
+            left: calc(50% - var(--timer-final-width) / 2);
+        }
+
+        .records-card {
+            position: absolute;
+            left: calc(50% - 422px);
+            top: calc(50% - var(--timer-final-height) / 2);
+            width: 260px;
+            height: var(--timer-final-height);
+            padding: 24px;
+            border-radius: 32px;
+            overflow: hidden;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.48), rgba(223, 255, 250, 0.22)),
+                rgba(255, 255, 255, 0.26);
+            border-color: rgba(79, 209, 197, 0.40);
+            box-shadow: 0 24px 74px rgba(25, 112, 126, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.70),
+                        inset 0 -1px 0 rgba(87, 214, 199, 0.16);
+            backdrop-filter: blur(34px) saturate(1.38);
+            -webkit-backdrop-filter: blur(34px) saturate(1.38);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(42px) scale(0.94);
+            filter: blur(12px) saturate(1.25);
+            transform-origin: right center;
+            transition:
+                left 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+                top 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+                width 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+                height 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.34s ease,
+                filter 0.5s ease,
+                transform 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+                border-radius 0.5s ease;
+        }
+
+        .records-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .timer-page.opening .records-card {
+            left: var(--start-left);
+            top: var(--start-top);
+            width: var(--start-width);
+            height: var(--start-height);
+            border-radius: var(--start-radius);
+            opacity: 0;
+            transform: scale(0.72);
+            filter: blur(12px) saturate(1.25);
+        }
+
+        .timer-page.active.stopwatch-mode .records-card {
+            left: calc(50% - 422px);
+            top: calc(50% - var(--timer-final-height) / 2);
+            width: 260px;
+            height: var(--timer-final-height);
+            border-radius: 32px;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0) scale(1);
+            filter: blur(0) saturate(1);
+        }
+
+        .timer-page.active.stopwatch-mode .records-card:hover {
+            transform: translateX(0) scale(1.01);
+        }
+
+        .timer-page.active.stopwatch-mode .records-card:active {
+            transform: translateX(0) scale(0.99);
+            transition: transform 0.1s ease;
+        }
+
+        .timer-page.active.countdown-mode .records-card {
+            left: calc(50% - var(--timer-final-width) / 2);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(68px) scale(0.96);
+            filter: blur(18px) saturate(1.4);
+            border-radius: 32px;
+        }
+
+        .timer-page.liquid-merging .timer-container {
+            box-shadow: 0 28px 86px rgba(25, 112, 126, 0.17),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+                        inset 0 -1px 0 rgba(87, 214, 199, 0.18);
+        }
+
+        .timer-page.liquid-merging .records-card {
+            backdrop-filter: blur(26px) saturate(1.45);
+            -webkit-backdrop-filter: blur(26px) saturate(1.45);
+        }
+
+        .timer-page.active .timer-clock-ghost {
+            opacity: 0;
+        }
+
+        .timer-page.active .timer-clock-ghost .time-display {
+            transform: scale(1.9);
+        }
+
+        .timer-page.active .timer-content {
+            opacity: 1;
+            transition-delay: 0.18s;
+        }
+
+        .timer-page.active.closing .timer-clock-ghost {
+            opacity: 1;
+        }
+
+        .timer-page.active.closing .timer-clock-ghost .time-display {
+            transform: scale(1);
+        }
+
+        .timer-page.active.closing .timer-content {
+            opacity: 0;
+            transition-delay: 0s;
+        }
+
+        .timer-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .timer-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .timer-title {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .timer-tabs {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        .timer-tab {
+            padding: 10px 28px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .timer-tab.active {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .timer-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .timer-panel.hidden {
+            display: none;
+        }
+
+        .seg-timer-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 28px;
+            min-height: 64px;
+            line-height: 1;
+        }
+
+        .seg-timer-digit {
+            position: relative;
+            width: 28px;
+            height: 48px;
+            flex: 0 0 28px;
+        }
+
+        #stopwatch-display {
+            align-items: center;
+            gap: 4px;
+        }
+
+        .seg-timer-colon {
+            width: 10px;
+            height: 48px;
+            flex: 0 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .seg-timer-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--seg-on);
+        }
+
+        .seg-timer-dot.off {
+            background: var(--seg-off);
+        }
+
+        .seg-timer-dot-sep {
+            width: 8px;
+            height: 48px;
+            flex: 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .seg-timer-dot-sep::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            margin-top: 32px;
+            border-radius: 50%;
+            background: var(--seg-on);
+        }
+
+        .stopwatch-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .sw-btn {
+            padding: 10px 24px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .sw-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .sw-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .records-list {
+            max-height: calc(100% - 34px);
+            overflow-y: auto;
+            text-align: left;
+            padding-right: 16px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .records-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        .records-scrollbar {
+            position: absolute;
+            top: 62px;
+            right: 14px;
+            bottom: 24px;
+            width: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.30);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.34);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+            z-index: 2;
+        }
+
+        .timer-page.active.stopwatch-mode .records-card.records-scrollable .records-scrollbar {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .records-scrollbar:hover,
+        .records-scrollbar.is-dragging {
+            background: rgba(255, 255, 255, 0.24);
+            box-shadow:
+                inset 0 1px 1px rgba(255, 255, 255, 0.42),
+                0 0 14px rgba(64, 205, 196, 0.20);
+        }
+
+        .records-scroll-thumb {
+            position: absolute;
+            left: 1px;
+            top: 0;
+            width: 4px;
+            min-height: 30px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(93, 220, 205, 0.95), rgba(38, 135, 199, 0.82));
+            box-shadow:
+                0 0 12px rgba(40, 172, 179, 0.32),
+                inset 0 1px 0 rgba(255, 255, 255, 0.56);
+            transition: width 0.16s ease, left 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .records-scrollbar:hover .records-scroll-thumb,
+        .records-scrollbar.is-dragging .records-scroll-thumb {
+            left: 0;
+            width: 6px;
+            background: linear-gradient(180deg, rgba(133, 235, 222, 1), rgba(52, 158, 207, 0.92));
+            box-shadow:
+                0 0 16px rgba(40, 172, 179, 0.42),
+                inset 0 1px 0 rgba(255, 255, 255, 0.62);
+        }
+
+        .records-title {
+            margin: 0 0 16px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .record-item {
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.035);
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .record-num {
+            color: var(--primary-light);
+        }
+
+        .cd-display-wrapper {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 24px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cd-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 4px;
+            border-radius: 12px;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .cd-group:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .cd-group-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .cd-group .seg-timer-display {
+            margin-bottom: 0;
+        }
+
+        .cd-display-wrapper .seg-timer-colon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-start;
+            margin: 16px 0 0;
+        }
+
+        .cd-wheel {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 20;
+            width: 98px;
+            max-height: 262px;
+            padding: 100px 10px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scroll-snap-type: y proximity;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            transform: translate(-50%, -50%) scaleY(0.86);
+            transform-origin: center;
+            opacity: 0;
+            pointer-events: none;
+            border: 1px solid rgba(53, 188, 202, 0.34);
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(223, 250, 255, 0.46));
+            backdrop-filter: blur(22px) saturate(1.28);
+            -webkit-backdrop-filter: blur(22px) saturate(1.28);
+            box-shadow: 0 18px 46px rgba(28, 117, 143, 0.16),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+                        inset 0 -1px 0 rgba(58, 194, 203, 0.16);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .cd-wheel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cd-group.picking {
+            z-index: 30;
+        }
+
+        .cd-group.picking > .seg-timer-display,
+        .cd-group.picking > .cd-group-label {
+            opacity: 0;
+        }
+
+        .cd-group.picking .cd-wheel {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scaleY(1);
+        }
+
+        .cd-wheel-item {
+            width: 100%;
+            height: 62px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            scroll-snap-align: center;
+            cursor: pointer;
+            transition: background 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+        }
+
+        .cd-wheel-item .seg-timer-digit {
+            width: 28px;
+            height: 48px;
+            flex-basis: 28px;
+        }
+
+        .cd-wheel-item .seg {
+            opacity: 0.76;
+            background: rgba(12, 13, 8, 0.08);
+        }
+
+        .cd-wheel-item .seg.on {
+            background: var(--seg-on);
+        }
+
+        .cd-wheel-item.selected .seg,
+        .cd-wheel-item:hover .seg {
+            opacity: 1;
+        }
+
+        .cd-wheel-item:hover,
+        .cd-wheel-item.selected {
+            background: linear-gradient(135deg, rgba(183, 243, 247, 0.92), rgba(197, 241, 231, 0.86));
+            box-shadow: inset 0 0 0 1px rgba(33, 181, 195, 0.24),
+                        0 8px 18px rgba(38, 135, 199, 0.12);
+        }
+
+        .cd-wheel-item:hover .seg.on,
+        .cd-wheel-item.selected .seg.on {
+            background: var(--seg-on);
+        }
+
+        .cd-wheel-item:hover .seg:not(.on),
+        .cd-wheel-item.selected .seg:not(.on) {
+            background: rgba(12, 13, 8, 0.065);
+        }
+
+        .cd-wheel-item:active {
+            transform: scale(0.94);
+        }
+
+        .cd-overtime {
+            --overtime-start-x: 0px;
+            --overtime-clock-x: 48px;
+            --overtime-label-x: -80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            height: 96px;
+            min-height: 96px;
+            position: relative;
+        }
+
+        .cd-overtime.hidden {
+            display: none;
+        }
+
+        .cd-display-wrapper.hidden {
+            display: none !important;
+        }
+
+        .cd-overtime-label {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            font-size: 16px;
+            color: #ef4444;
+            font-weight: 600;
+            opacity: 1;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+        }
+
+        .cd-overtime-seg {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            transform: translateX(0);
+            will-change: transform;
+        }
+
+        .cd-overtime.is-overtime-active .cd-overtime-label {
+            opacity: 1;
+            transform: translate(calc(-50% + var(--overtime-label-x)), -50%);
+        }
+
+        .cd-overtime.is-overtime-active .cd-overtime-seg {
+            transform: translateX(var(--overtime-clock-x));
+        }
+
+        .cd-overtime.is-entering .cd-overtime-label {
+            animation: cd-overtime-label-exit 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .cd-overtime.is-entering .cd-overtime-seg {
+            animation: cd-overtime-clock-enter 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .cd-overtime.is-resetting .cd-overtime-label {
+            animation: cd-overtime-label-reset 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .cd-overtime.is-resetting .cd-overtime-seg {
+            animation: cd-overtime-clock-reset 0.56s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes cd-overtime-clock-enter {
+            from { transform: translateX(var(--overtime-start-x)); }
+            to { transform: translateX(var(--overtime-clock-x)); }
+        }
+
+        @keyframes cd-overtime-label-exit {
+            from {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--overtime-start-x)), -50%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(calc(-50% + var(--overtime-label-x)), -50%);
+            }
+        }
+
+        @keyframes cd-overtime-clock-reset {
+            from { transform: translateX(var(--overtime-clock-x)); }
+            to { transform: translateX(var(--overtime-start-x)); }
+        }
+
+        @keyframes cd-overtime-label-reset {
+            from {
+                opacity: 1;
+                transform: translate(calc(-50% + var(--overtime-label-x)), -50%);
+            }
+            to {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--overtime-start-x)), -50%);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="flat-cursor" id="flat-cursor" aria-hidden="true">
+        <svg viewBox="0 0 22 24" focusable="false">
+            <path class="cursor-fill" d="M3.5 4.8C3.2 4.5 2.6 5 2.9 5.6l8.5 16c0.3 0.6 1.2 0.6 1.5 0l8.5-16c0.3-0.6-0.3-1.2-0.8-0.9L12.8 10.5c-0.3 0.1-0.6 0.1-0.9 0L3.5 4.8z"/>
+        </svg>
+    </div>
+
+    <div class="bg-animation">
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-2"></div>
+        <div class="bg-blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="layout">
+            <div class="profile-card glass">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="smile.png" alt="Scienmicroit">
+                    </div>
+                    <div>
+                        <div class="profile-name">Scienmicroit</div>
+                        <div class="profile-status">Developer</div>
+                    </div>
+                </div>
+                <div class="menu-label">菜单</div>
+                <div class="menu-shell">
+                    <div class="menu-indicator" aria-hidden="true"></div>
+                    <div class="menu-hover-indicator" aria-hidden="true"></div>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <a href="#home" class="menu-link active">
+                                <span class="menu-icon">🏠</span>
+                                <span class="menu-text">主页</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#projects" class="menu-link">
+                                <span class="menu-icon">⊞</span>
+                                <span class="menu-text">我的项目</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#about" class="menu-link">
+                                <span class="menu-icon">☺</span>
+                                <span class="menu-text">关于网站</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#share" class="menu-link">
+                                <span class="menu-icon">☆</span>
+                                <span class="menu-text">推荐分享</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#blogs" class="menu-link">
+                                <span class="menu-icon">⊛</span>
+                                <span class="menu-text">优秀博客</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="greeting-card glass">
+                <div class="greeting-avatar">💻</div>
+                <div class="greeting-text">下午好</div>
+                <div class="greeting-name">I'm Scienmicroit!</div>
+            </div>
+
+            <div class="time-card glass" id="time-card">
+                <div class="time-display" id="time"></div>
+            </div>
+
+            <div class="weather-card glass" id="weather-card">
+                <div class="weather-content" aria-live="polite">
+                    <div class="weather-icon" id="weather-icon" aria-hidden="true">--</div>
+                    <div class="weather-top">
+                        <div class="weather-location" id="weather-location">定位中</div>
+                        <div class="weather-temp" id="weather-temp">--°C</div>
+                    </div>
+                    <div class="weather-bottom">
+                        <div class="weather-condition" id="weather-condition">--</div>
+                        <div class="weather-updated" id="weather-updated">--:-- 更新</div>
+                    </div>
+                </div>
+                <div class="weather-error">位置信息获取失败</div>
+            </div>
+
+            <div class="calendar-card glass">
+                <div class="calendar-header">
+                    <span id="calendar-date"></span>
+                </div>
+                <div class="calendar-weekdays">
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                    <div class="weekday">日</div>
+                </div>
+                <div class="calendar-days" id="calendar-days"></div>
+            </div>
+
+            <div class="articles-card glass">
+                <div class="card-title">最新文章</div>
+                <div class="article-item">
+                    <div class="article-thumb">📝</div>
+                    <div class="article-info">
+                        <div class="article-title">深入理解 JavaScript 异步编程</div>
+                        <div class="article-desc">探索 Promise、async/await 的工作原理</div>
+                        <div class="article-date">2024/3/15</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="social-card glass">
+                <a href="https://github.com/Scienmicroit" class="social-link" target="_blank" rel="noopener noreferrer">
+                    <svg class="social-link-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                    Github
+                </a>
+                <a href="https://space.bilibili.com/493831046" class="social-link" target="_blank" rel="noopener noreferrer">
+                    <svg class="social-link-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.124.929.373.249.249.373.551.373.907 0 .355-.124.657-.373.906L17.813 4.653zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773H5.333zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/>
+                    </svg>
+                    哔哩哔哩
+                </a>
+                <a href="#" class="social-link">
+                    <svg class="social-link-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.5h-9v-1h9v1zm0-3h-9v-1h9v1zm0-3h-9v-1h9v1z"/>
+                    </svg>
+                    博客（无用）
+                </a>
+                <a href="mailto:1545126121@qq.com" class="social-link">
+                    <svg class="social-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="M22 4L12 13 2 4"/>
+                    </svg>
+                    电子邮件
+                </a>
+            </div>
+
+            <div class="recommend-card glass">
+                <div class="card-title">随机推荐</div>
+                <div class="recommend-icon">🐳</div>
+                <div class="recommend-title">Docker & YAML</div>
+                <div class="recommend-desc">容器化部署不再玄学。</div>
+                <div class="recommend-stats">Views: 32,940 Marks: 498</div>
+            </div>
+
+            <div class="music-card glass" id="music-card">
+                <div class="music-note" id="music-art">🎵</div>
+                <div class="music-info">
+                    <div class="music-heading">
+                        <div class="music-title" id="music-title">梦境寻踪</div>
+                        <button class="music-random" id="music-random" type="button" aria-label="随机切换歌曲" title="随机切换歌曲">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M16 3h5v5"></path>
+                                <path d="M4 20 21 3"></path>
+                                <path d="M21 16v5h-5"></path>
+                                <path d="m15 15 6 6"></path>
+                                <path d="M4 4l5 5"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="music-progress-shell" id="music-progress-shell">
+                        <div class="music-progress" id="music-progress" role="slider" tabindex="0" aria-label="歌曲进度" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+                            <div class="music-progress-bar" id="music-progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="music-time" id="music-time">0:00/--:--</div>
+                </div>
+                <button class="music-play" id="music-play" type="button" aria-label="播放音乐" aria-pressed="false">
+                    <span class="music-play-icon play" aria-hidden="true"></span>
+                    <span class="music-play-icon pause" aria-hidden="true"></span>
+                </button>
+                <div class="music-progress-expansion" id="music-progress-expansion" aria-hidden="true">
+                    <div class="music-progress-expansion-fill"></div>
+                </div>
+                <div class="music-dots" aria-hidden="true">
+                    <span class="music-dot active" data-track-dot="0"></span>
+                    <span class="music-dot" data-track-dot="1"></span>
+                </div>
+            </div>
+
+            <div class="likes-card glass" id="likes-card">
+                <span class="likes-heart" id="likes-heart">♥</span>
+                <span class="likes-count" id="likes-count">17247</span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="timer-page" id="timer-page">
+        <div class="timer-bg"></div>
+        <div class="timer-container glass" id="timer-container">
+            <div class="timer-clock-ghost" id="timer-clock-ghost"></div>
+            <div class="timer-content">
+                <button class="timer-close" id="timer-close">✕</button>
+                <h2 class="timer-title">计时器</h2>
+
+                <div class="timer-tabs">
+                    <button class="timer-tab active" data-tab="stopwatch">正计时</button>
+                    <button class="timer-tab" data-tab="countdown">倒计时</button>
+                </div>
+
+                <div class="timer-panel" id="stopwatch-panel">
+                    <div class="seg-timer-display" id="stopwatch-display"></div>
+                    <div class="stopwatch-btns">
+                        <button class="sw-btn" id="sw-start">开始</button>
+                        <button class="sw-btn" id="sw-reset" disabled>重置</button>
+                        <button class="sw-btn" id="sw-record" disabled>记录</button>
+                    </div>
+                </div>
+
+                <div class="timer-panel hidden" id="countdown-panel">
+                    <div class="cd-display-wrapper" id="cd-display-wrapper">
+                        <div class="cd-group" data-unit="hour">
+                            <div class="seg-timer-display" id="cd-seg-hour"></div>
+                            <span class="cd-group-label">时</span>
+                        </div>
+                        <div class="seg-timer-colon"><div class="seg-timer-dot"></div><div class="seg-timer-dot"></div></div>
+                        <div class="cd-group" data-unit="min">
+                            <div class="seg-timer-display" id="cd-seg-min"></div>
+                            <span class="cd-group-label">分</span>
+                        </div>
+                        <div class="seg-timer-colon"><div class="seg-timer-dot"></div><div class="seg-timer-dot"></div></div>
+                        <div class="cd-group" data-unit="sec">
+                            <div class="seg-timer-display" id="cd-seg-sec"></div>
+                            <span class="cd-group-label">秒</span>
+                        </div>
+                    </div>
+                    <div class="cd-overtime hidden" id="cd-overtime">
+                        <span class="cd-overtime-label">已超时：</span>
+                        <div class="cd-overtime-seg" id="cd-overtime-seg"></div>
+                    </div>
+                    <div class="stopwatch-btns">
+                        <button class="sw-btn" id="cd-start" disabled>开始</button>
+                        <button class="sw-btn" id="cd-reset" disabled>重置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="records-card glass" id="records-card">
+            <div class="records-title">记录</div>
+            <div class="records-list" id="records-list"></div>
+            <div class="records-scrollbar" id="records-scrollbar" aria-hidden="true">
+                <div class="records-scroll-thumb" id="records-scroll-thumb"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function randomizeBackgroundBlobs() {
+            const blobs = [...document.querySelectorAll('.bg-blob')];
+            const zones = [
+                { x: [-20, 26], y: [-22, 30] },
+                { x: [58, 92], y: [4, 58] },
+                { x: [14, 72], y: [58, 88] }
+            ];
+            const rand = (min, max) => min + Math.random() * (max - min);
+
+            blobs.forEach((blob, index) => {
+                const zone = zones[index] || { x: [-12, 88], y: [-12, 88] };
+                blob.style.setProperty('--blob-x', `${rand(zone.x[0], zone.x[1]).toFixed(2)}vw`);
+                blob.style.setProperty('--blob-y', `${rand(zone.y[0], zone.y[1]).toFixed(2)}vh`);
+                blob.style.setProperty('--blob-duration', `${rand(28, 42).toFixed(2)}s`);
+                blob.style.setProperty('--blob-delay', `${rand(-18, 0).toFixed(2)}s`);
+
+                for (let i = 1; i <= 3; i++) {
+                    blob.style.setProperty(`--drift-x${i}`, `${rand(-100, 100).toFixed(1)}px`);
+                    blob.style.setProperty(`--drift-y${i}`, `${rand(-100, 100).toFixed(1)}px`);
+                }
+            });
+        }
+
+        randomizeBackgroundBlobs();
+
+        const flatCursor = document.getElementById('flat-cursor');
+        let cursorX = -80;
+        let cursorY = -80;
+        let cursorTargetX = -80;
+        let cursorTargetY = -80;
+
+        function updateFlatCursorTarget(e) {
+            cursorTargetX = e.clientX;
+            cursorTargetY = e.clientY;
+            flatCursor.classList.remove('is-hidden');
+        }
+
+        document.addEventListener('mousemove', updateFlatCursorTarget);
+        document.addEventListener('pointermove', updateFlatCursorTarget);
+
+        document.addEventListener('mouseleave', () => {
+            flatCursor.classList.add('is-hidden');
+        });
+
+        function animateFlatCursor() {
+            cursorX += (cursorTargetX - cursorX) * 0.8;
+            cursorY += (cursorTargetY - cursorY) * 0.8;
+            flatCursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+            requestAnimationFrame(animateFlatCursor);
+        }
+        animateFlatCursor();
+
+        document.addEventListener('mouseover', (e) => {
+            flatCursor.classList.toggle('is-hover', !!e.target.closest('a, button, .clickable, .glass, .social-link, .menu-link, .cd-group, .cd-wheel-item, .records-scrollbar, .records-scroll-thumb'));
+        });
+
+        (function () {
+            const maxTilt = 6;
+            const lerpFactor = 0.02;
+            let card = null;
+            let raf = 0;
+            let tx = 0, ty = 0, cx = 0, cy = 0;
+            let lastPointerX = 0, lastPointerY = 0;
+            let hasPointer = false;
+
+            function compute(e) {
+                const r = card.getBoundingClientRect();
+                const mx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+                const my = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+                tx = Math.max(-1, Math.min(1, mx)) * maxTilt;
+                ty = Math.max(-1, Math.min(1, my)) * -maxTilt;
+            }
+
+            function apply() {
+                if (!card) return;
+                card.style.setProperty('--tilt-x', cx.toFixed(2) + 'deg');
+                card.style.setProperty('--tilt-y', cy.toFixed(2) + 'deg');
+            }
+
+            function loop() {
+                if (card && card.classList.contains('side-dock')) {
+                    card.style.setProperty('--tilt-x', '0deg');
+                    card.style.setProperty('--tilt-y', '0deg');
+                    raf = 0; return;
+                }
+                var dx = tx - cx, dy = ty - cy;
+                if (Math.abs(dx) < 0.02 && Math.abs(dy) < 0.02) {
+                    cx = tx; cy = ty; apply(); raf = 0; return;
+                }
+                cx += dx * lerpFactor; cy += dy * lerpFactor;
+                apply();
+                raf = requestAnimationFrame(loop);
+            }
+
+            function start() { if (!raf) raf = requestAnimationFrame(loop); }
+            function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+            function clear() {
+                tx = 0; ty = 0; cx = 0; cy = 0; stop();
+                if (card) { card.style.setProperty('--tilt-x', '0deg'); card.style.setProperty('--tilt-y', '0deg'); }
+                card = null;
+            }
+
+            function getTiltCard(target) {
+                const c = target.closest('.glass');
+                if (!c || c.closest('.timer-page') || c.classList.contains('side-dock')) return null;
+                return c;
+            }
+
+            function setCard(c) {
+                if (!c) {
+                    if (card) clear();
+                    return;
+                }
+                if (card && card !== c) clear();
+                card = c;
+            }
+
+            function syncHoveredCard() {
+                if (!hasPointer) return;
+                const hovered = document.elementFromPoint(lastPointerX, lastPointerY);
+                setCard(hovered ? getTiltCard(hovered) : null);
+                if (!card) return;
+                compute({ clientX: lastPointerX, clientY: lastPointerY });
+                start();
+            }
+
+            document.addEventListener('mouseover', function (e) {
+                setCard(getTiltCard(e.target));
+            });
+
+            document.addEventListener('mousemove', function (e) {
+                lastPointerX = e.clientX;
+                lastPointerY = e.clientY;
+                hasPointer = true;
+                setCard(getTiltCard(e.target));
+                if (!card) return;
+                compute(e); start();
+            });
+
+            document.addEventListener('mouseout', function (e) {
+                if (!card) return;
+                var c = e.target.closest('.glass');
+                if (c !== card) return;
+                var rel = e.relatedTarget;
+                if (rel && rel.closest && rel.closest('.glass') === card) return;
+                clear();
+            });
+
+            setInterval(syncHoveredCard, 120);
+        })();
+
+        const originalTitle = document.title;
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                document.title = '诶？你怎么走啦？';
+            } else {
+                document.title = '太好啦，你又回来啦！';
+                setTimeout(() => {
+                    document.title = originalTitle;
+                }, 500);
+            }
+        });
+
+        function getCardPressTransform(card, scale = 1) {
+            const shiftX = getComputedStyle(card).getPropertyValue('--shift-x').trim() || '0px';
+            const shiftY = getComputedStyle(card).getPropertyValue('--shift-y').trim() || '0px';
+            return `perspective(800px) translate(${shiftX}, ${shiftY}) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg)) scale(${scale})`;
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.timer-page')) return;
+            if (e.target.closest('.music-progress-shell, .music-progress-expansion')) return;
+            if (e.target.closest('.menu-link')) return;
+            const card = e.target.closest('.glass');
+            if (card) {
+                const MIN_SCALE = 0.9;
+
+                if (card._bounceTimeout) {
+                    clearTimeout(card._bounceTimeout);
+                    card._bounceTimeout = null;
+                }
+
+                const currentScale = card._currentScale || 1;
+                const newScale = Math.max(currentScale * 0.95, MIN_SCALE);
+                card._currentScale = newScale;
+                card.style.transition = 'transform 0.15s ease-out';
+                card.style.transform = getCardPressTransform(card, newScale);
+
+                const onUp = () => {
+                    document.removeEventListener('mouseup', onUp);
+                    card.style.transition = 'transform 0.15s ease-out';
+                    card.style.transform = getCardPressTransform(card, 1);
+                    card._currentScale = 1;
+                    card._bounceTimeout = setTimeout(() => {
+                        card.style.transition = '';
+                        card.style.transform = '';
+                        card._bounceTimeout = null;
+                    }, 160);
+                };
+                document.addEventListener('mouseup', onUp);
+            }
+        });
+
+        const SEG_MAP = {
+            0: [1,1,1,1,1,1,0],
+            1: [0,1,1,0,0,0,0],
+            2: [1,1,0,1,1,0,1],
+            3: [1,1,1,1,0,0,1],
+            4: [0,1,1,0,0,1,1],
+            5: [1,0,1,1,0,1,1],
+            6: [1,0,1,1,1,1,1],
+            7: [1,1,1,0,0,0,0],
+            8: [1,1,1,1,1,1,1],
+            9: [1,1,1,1,0,1,1]
+        };
+
+        function createDigitHTML() {
+            return `<div class="seg seg-h seg-a"></div>
+                    <div class="seg seg-v seg-b"></div>
+                    <div class="seg seg-v seg-c"></div>
+                    <div class="seg seg-h seg-d"></div>
+                    <div class="seg seg-v seg-e"></div>
+                    <div class="seg seg-v seg-f"></div>
+                    <div class="seg seg-h seg-g"></div>`;
+        }
+
+        function createTimeHTML() {
+            const container = document.getElementById('time');
+            let html = '';
+            for (let i = 0; i < 6; i++) {
+                html += `<div class="seg-digit">${createDigitHTML()}</div>`;
+                if (i === 1 || i === 3) {
+                    html += `<div class="seg-colon"><div class="seg-colon-dot"></div><div class="seg-colon-dot"></div></div>`;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        function setDigit(digitEl, num) {
+            const segs = SEG_MAP[num];
+            const segEls = digitEl.querySelectorAll('.seg');
+            segEls.forEach((seg, i) => {
+                seg.classList.toggle('on', segs[i] === 1);
+            });
+        }
+
+        createTimeHTML();
+
+        const greetingText = document.querySelector('.greeting-text');
+        const greetingAvatar = document.querySelector('.greeting-avatar');
+        const greetingName = document.querySelector('.greeting-name');
+
+        const GREETING_PHRASES = {
+            0: ['早睡早起，注意身体', '再不睡就要天亮了……'],
+            5: ['开启新的一天'],
+            8: ['充满能量', '记得吃早餐'],
+            11: ['餐后午睡，效率翻倍'],
+            13: ['感到小疲？来杯 café', '下午才是最棒的'],
+            18: ['劳累一天，好好休息', '晚餐别拖太久', '已进入贤者模式', '请自由安排']
+        };
+
+        function pickGreetingPhrase(hour) {
+            var slots = [18, 13, 11, 8, 5, 0];
+            for (var i = 0; i < slots.length; i++) {
+                if (hour >= slots[i]) {
+                    var arr = GREETING_PHRASES[slots[i]];
+                    return arr[Math.floor(Math.random() * arr.length)];
+                }
+            }
+        }
+
+        var lastHour = -1;
+
+        function updateTime() {
+            const now = new Date();
+            const hour = now.getHours();
+            const h = String(hour).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const digits = document.querySelectorAll('.seg-digit');
+            setDigit(digits[0], parseInt(h[0]));
+            setDigit(digits[1], parseInt(h[1]));
+            setDigit(digits[2], parseInt(m[0]));
+            setDigit(digits[3], parseInt(m[1]));
+            setDigit(digits[4], parseInt(s[0]));
+            setDigit(digits[5], parseInt(s[1]));
+
+            if (hour !== lastHour) {
+                lastHour = hour;
+
+                if (hour >= 0 && hour < 5) {
+                    greetingAvatar.textContent = '💤';
+                    greetingText.textContent = '夜深了';
+                } else if (hour >= 5 && hour < 8) {
+                    greetingAvatar.textContent = '🌅';
+                    greetingText.textContent = '早上好';
+                } else if (hour >= 8 && hour < 11) {
+                    greetingAvatar.textContent = '🌇';
+                    greetingText.textContent = '上午好';
+                } else if (hour >= 11 && hour < 13) {
+                    greetingAvatar.textContent = '🍴';
+                    greetingText.textContent = '中午好';
+                } else if (hour >= 13 && hour < 18) {
+                    greetingAvatar.textContent = '☕';
+                    greetingText.textContent = '下午好';
+                } else {
+                    greetingAvatar.textContent = '🌃';
+                    greetingText.textContent = '晚上好';
+                }
+
+                greetingName.textContent = pickGreetingPhrase(hour);
+            }
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        const weatherCard = document.getElementById('weather-card');
+        const weatherIconEl = document.getElementById('weather-icon');
+        const weatherLocationEl = document.getElementById('weather-location');
+        const weatherTempEl = document.getElementById('weather-temp');
+        const weatherConditionEl = document.getElementById('weather-condition');
+        const weatherUpdatedEl = document.getElementById('weather-updated');
+        const WEATHER_REFRESH_INTERVAL = 10 * 60 * 1000;
+
+        const WEATHER_CODE_MAP = {
+            0: ['晴', '☀️'],
+            1: ['晴间多云', '🌤️'],
+            2: ['多云', '⛅'],
+            3: ['阴', '☁️'],
+            45: ['雾', '🌫️'],
+            48: ['雾凇', '🌫️'],
+            51: ['小毛毛雨', '🌦️'],
+            53: ['毛毛雨', '🌦️'],
+            55: ['强毛毛雨', '🌧️'],
+            56: ['冻毛毛雨', '🌧️'],
+            57: ['强冻毛毛雨', '🌧️'],
+            61: ['小雨', '🌧️'],
+            63: ['中雨', '🌧️'],
+            65: ['大雨', '🌧️'],
+            66: ['冻雨', '🌧️'],
+            67: ['强冻雨', '🌧️'],
+            71: ['小雪', '🌨️'],
+            73: ['中雪', '🌨️'],
+            75: ['大雪', '🌨️'],
+            77: ['雪粒', '🌨️'],
+            80: ['小阵雨', '🌦️'],
+            81: ['阵雨', '🌧️'],
+            82: ['强阵雨', '🌧️'],
+            85: ['小阵雪', '🌨️'],
+            86: ['阵雪', '🌨️'],
+            95: ['雷阵雨', '⛈️'],
+            96: ['雷暴伴冰雹', '⛈️'],
+            99: ['强雷暴伴冰雹', '⛈️']
+        };
+
+        function showWeatherError() {
+            weatherCard.classList.add('is-error');
+        }
+
+        function getCurrentPosition() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation unavailable'));
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: WEATHER_REFRESH_INTERVAL
+                });
+            });
+        }
+
+        function formatWeatherUpdateTime(value) {
+            const date = value ? new Date(value) : new Date();
+            if (Number.isNaN(date.getTime())) {
+                return '--:-- 更新';
+            }
+
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes} 更新`;
+        }
+
+        function getFallbackPlaceName(timezone) {
+            if (!timezone || typeof timezone !== 'string') return '当前位置';
+            const place = timezone.split('/').pop().replace(/_/g, ' ');
+            return place || '当前位置';
+        }
+
+        function pickAddressPart(address, keys) {
+            for (const key of keys) {
+                if (address && address[key]) return address[key];
+            }
+            return '';
+        }
+
+        async function fetchPlaceName(latitude, longitude, fallbackTimezone) {
+            const fallback = getFallbackPlaceName(fallbackTimezone);
+            let timeout = null;
+
+            try {
+                const controller = new AbortController();
+                timeout = setTimeout(() => controller.abort(), 4000);
+                const url = new URL('https://nominatim.openstreetmap.org/reverse');
+                url.searchParams.set('format', 'jsonv2');
+                url.searchParams.set('lat', latitude);
+                url.searchParams.set('lon', longitude);
+                url.searchParams.set('zoom', '10');
+                url.searchParams.set('accept-language', 'zh-CN');
+
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timeout);
+                if (!response.ok) return fallback;
+
+                const data = await response.json();
+                const address = data.address || {};
+                const city = pickAddressPart(address, ['city', 'town', 'village', 'municipality', 'state']);
+                const district = pickAddressPart(address, ['city_district', 'district', 'suburb', 'county']);
+
+                if (city && district && city !== district && !city.includes(district)) {
+                    return `${city}${district}`;
+                }
+
+                return city || district || fallback;
+            } catch (error) {
+                return fallback;
+            } finally {
+                if (timeout) clearTimeout(timeout);
+            }
+        }
+
+        async function fetchCurrentWeather(latitude, longitude) {
+            const url = new URL('https://api.open-meteo.com/v1/forecast');
+            url.searchParams.set('latitude', latitude);
+            url.searchParams.set('longitude', longitude);
+            url.searchParams.set('current', 'temperature_2m,weather_code,is_day');
+            url.searchParams.set('temperature_unit', 'celsius');
+            url.searchParams.set('timezone', 'auto');
+            url.searchParams.set('forecast_days', '1');
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Weather request failed');
+            }
+
+            return response.json();
+        }
+
+        async function updateWeather() {
+            try {
+                const position = await getCurrentPosition();
+                const latitude = String(position.coords.latitude);
+                const longitude = String(position.coords.longitude);
+                const weather = await fetchCurrentWeather(latitude, longitude);
+                const current = weather.current || {};
+                const code = Number(current.weather_code);
+                const temperature = Number(current.temperature_2m);
+                if (!Number.isFinite(temperature)) {
+                    throw new Error('Weather temperature missing');
+                }
+                const isNight = current.is_day === 0;
+                const [condition, icon] = WEATHER_CODE_MAP[code] || ['未知', '☁️'];
+                const placeName = await fetchPlaceName(latitude, longitude, weather.timezone);
+
+                weatherCard.classList.remove('is-error');
+                weatherLocationEl.textContent = placeName;
+                weatherTempEl.textContent = `${Math.round(temperature)}°C`;
+                weatherConditionEl.textContent = condition;
+                weatherIconEl.textContent = code === 0 && isNight ? '🌙' : icon;
+                weatherUpdatedEl.textContent = formatWeatherUpdateTime(current.time);
+            } catch (error) {
+                showWeatherError();
+            }
+        }
+
+        updateWeather().then(() => {
+            if (!weatherCard.classList.contains('is-error')) {
+                setInterval(updateWeather, WEATHER_REFRESH_INTERVAL);
+            }
+        });
+
+        const likesCardEl = document.getElementById('likes-card');
+        const likesCountEl = document.getElementById('likes-count');
+        const likesHeartEl = document.getElementById('likes-heart');
+        let likes = parseInt(localStorage.getItem('blog_likes') || '17247');
+        const likesCountTextNode = document.createTextNode('');
+        likesCountEl.textContent = '';
+        likesCountEl.appendChild(likesCountTextNode);
+
+        function updateLikesCountText() {
+            likesCountTextNode.nodeValue = likes.toLocaleString();
+        }
+
+        updateLikesCountText();
+
+        function spawnPlusBubble() {
+            const bubble = document.createElement('span');
+            bubble.className = 'plus-bubble';
+            bubble.textContent = '+1';
+            likesCountEl.appendChild(bubble);
+            setTimeout(() => bubble.remove(), 800);
+        }
+
+        function spawnFloatHearts() {
+            const rect = likesHeartEl.getBoundingClientRect();
+            const cardRect = likesCardEl.getBoundingClientRect();
+            for (let i = 0; i < 3; i++) {
+                const h = document.createElement('span');
+                h.className = 'float-heart';
+                h.textContent = '♥';
+                const ox = rect.left - cardRect.left + rect.width / 2;
+                const oy = rect.top - cardRect.top + rect.height / 2;
+                h.style.left = ox + 'px';
+                h.style.top = oy + 'px';
+                h.style.setProperty('--hx', (Math.random() * 30 - 15) + 'px');
+                h.style.setProperty('--hr', (Math.random() * 40 - 20) + 'deg');
+                h.style.animationDelay = (i * 0.08) + 's';
+                likesCardEl.appendChild(h);
+                setTimeout(() => h.remove(), 900);
+            }
+        }
+
+        likesCardEl.addEventListener('click', (e) => {
+            likes++;
+            localStorage.setItem('blog_likes', likes);
+            updateLikesCountText();
+            likesHeartEl.classList.remove('pop');
+            void likesHeartEl.offsetWidth;
+            likesHeartEl.classList.add('pop');
+            spawnPlusBubble();
+            spawnFloatHearts();
+        });
+
+        function renderCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const today = now.getDate();
+
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            const weekday = weekdays[now.getDay()];
+            document.getElementById('calendar-date').textContent = `${year} 年 ${month + 1} 月 ${today} 日 星期${weekday}`;
+
+            const activeWeekdayIndex = now.getDay() === 0 ? 6 : now.getDay() - 1;
+            document.querySelectorAll('.calendar-weekdays .weekday').forEach((day, index) => {
+                day.classList.toggle('active', index === activeWeekdayIndex);
+            });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const startDay = firstDay === 0 ? 6 : firstDay - 1;
+
+            const container = document.getElementById('calendar-days');
+            container.innerHTML = '';
+
+            for (let i = 0; i < startDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'day empty';
+                container.appendChild(empty);
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day';
+                dayEl.textContent = d;
+                if (d === today) {
+                    dayEl.classList.add('today');
+                }
+                container.appendChild(dayEl);
+            }
+        }
+
+        renderCalendar();
+
+        function scheduleCalendarRefresh() {
+            const now = new Date();
+            const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            setTimeout(() => {
+                renderCalendar();
+                scheduleCalendarRefresh();
+            }, nextMidnight - now + 1000);
+        }
+
+        scheduleCalendarRefresh();
+
+        const menuShell = document.querySelector('.menu-shell');
+        const menuIndicator = document.querySelector('.menu-indicator');
+        const menuHoverIndicator = document.querySelector('.menu-hover-indicator');
+        const menuLinks = document.querySelectorAll('.menu-link');
+
+        function clearMenuPreview() {
+            menuLinks.forEach(link => link.classList.remove('is-preview'));
+        }
+
+        function getMenuTargetY(target) {
+            let y = 0;
+            let node = target;
+            while (node && node !== menuShell) {
+                y += node.offsetTop || 0;
+                node = node.offsetParent;
+            }
+            return y;
+        }
+
+        function createMenuIndicatorController(indicator) {
+            let y = 0;
+            let targetY = 0;
+            let velocity = 0;
+            let frame = null;
+            let lastTime = 0;
+            let completeMove = null;
+
+            function setPosition(nextY) {
+                y = nextY;
+                indicator.style.transform = `translate3d(0, ${nextY}px, 0)`;
+            }
+
+            function stopMotion(clearComplete = true) {
+                if (frame) {
+                    cancelAnimationFrame(frame);
+                    frame = null;
+                }
+                lastTime = 0;
+                velocity = 0;
+                if (clearComplete) {
+                    completeMove = null;
+                }
+            }
+
+            function animate(time) {
+                if (!lastTime) {
+                    lastTime = time;
+                }
+
+                const dt = Math.min((time - lastTime) / 1000, 0.032);
+                lastTime = time;
+
+                const stiffness = 230;
+                const damping = 20;
+                const distance = targetY - y;
+                const acceleration = distance * stiffness - velocity * damping;
+
+                velocity += acceleration * dt;
+                setPosition(y + velocity * dt);
+
+                if (Math.abs(distance) < 0.35 && Math.abs(velocity) < 4) {
+                    const done = completeMove;
+                    completeMove = null;
+                    setPosition(targetY);
+                    stopMotion(false);
+                    if (done) done();
+                    return;
+                }
+
+                frame = requestAnimationFrame(animate);
+            }
+
+            function move(target, animateMove = true, onComplete = null) {
+                if (!menuShell || !indicator || !target) return;
+
+                const nextY = getMenuTargetY(target);
+                completeMove = typeof onComplete === 'function' ? onComplete : null;
+
+                indicator.style.setProperty('--menu-indicator-height', `${target.offsetHeight}px`);
+                indicator.style.setProperty('--menu-indicator-y', `${nextY}px`);
+                targetY = nextY;
+
+                if (!animateMove || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    const done = completeMove;
+                    completeMove = null;
+                    stopMotion(false);
+                    setPosition(nextY);
+                    if (done) done();
+                    return;
+                }
+
+                if (!frame) {
+                    frame = requestAnimationFrame(animate);
+                }
+            }
+
+            function setPress(isPressing) {
+                indicator.classList.toggle('is-pressing', isPressing);
+            }
+
+            function syncTo(nextY) {
+                stopMotion();
+                targetY = nextY;
+                setPosition(nextY);
+            }
+
+            return { move, setPress, syncTo, getY: () => y };
+        }
+
+        function getActiveMenuLink() {
+            return document.querySelector('.menu-link.active') || menuLinks[0];
+        }
+
+        const solidMenuIndicator = createMenuIndicatorController(menuIndicator);
+        const hoverMenuIndicator = createMenuIndicatorController(menuHoverIndicator);
+        let menuHoverReturnId = 0;
+        let menuPointerX = 0;
+        let menuPointerY = 0;
+        let hasMenuPointer = false;
+
+        function setMenuIndicatorPress(isPressing) {
+            hoverMenuIndicator.setPress(isPressing);
+        }
+
+        function rememberMenuPointer(e) {
+            menuPointerX = e.clientX;
+            menuPointerY = e.clientY;
+            hasMenuPointer = true;
+        }
+
+        function getMenuLinkUnderPointer() {
+            if (!hasMenuPointer) return null;
+            const hovered = document.elementFromPoint(menuPointerX, menuPointerY);
+            const link = hovered && hovered.closest ? hovered.closest('.menu-link') : null;
+            return link && menuShell.contains(link) ? link : null;
+        }
+
+        function syncMenuHoverState(animateMove = true) {
+            const hoveredLink = getMenuLinkUnderPointer();
+            const returnId = ++menuHoverReturnId;
+            clearMenuPreview();
+            setMenuIndicatorPress(false);
+
+            if (hoveredLink) {
+                menuShell.classList.add('is-hovering');
+                hoveredLink.classList.add('is-preview');
+                hoverMenuIndicator.move(hoveredLink, animateMove);
+                return;
+            }
+
+            hoverMenuIndicator.move(getActiveMenuLink(), animateMove, () => {
+                if (returnId === menuHoverReturnId) {
+                    menuShell.classList.remove('is-hovering');
+                }
+            });
+        }
+
+        function scheduleMenuHoverSync() {
+            requestAnimationFrame(() => syncMenuHoverState(false));
+            setTimeout(() => syncMenuHoverState(true), 90);
+            setTimeout(() => syncMenuHoverState(true), 720);
+        }
+
+        document.addEventListener('pointermove', rememberMenuPointer);
+
+        solidMenuIndicator.move(getActiveMenuLink(), false);
+        hoverMenuIndicator.move(getActiveMenuLink(), false);
+        window.addEventListener('resize', () => {
+            solidMenuIndicator.move(getActiveMenuLink(), false);
+            hoverMenuIndicator.move(getActiveMenuLink(), false);
+            scheduleMenuHoverSync();
+            if (isMenuSideMode) {
+                dockProfileCard();
+            }
+        });
+
+        const layoutEl = document.querySelector('.layout');
+        const profileCardEl = document.querySelector('.profile-card');
+        const detailMenuTargets = new Set(['#projects', '#about', '#share', '#blogs']);
+        let isMenuSideMode = false;
+        let profileHomeRect = null;
+        let profileDockCleanupTimer = null;
+
+        function getDockProfileRect() {
+            const horizontalGap = window.innerWidth <= 720 ? 18 : 32;
+            const verticalGap = window.innerHeight <= 620 ? 18 : 24;
+            const width = Math.min(248, window.innerWidth - horizontalGap * 2);
+            return {
+                left: horizontalGap,
+                top: verticalGap,
+                width,
+                height: Math.max(360, window.innerHeight - verticalGap * 2)
+            };
+        }
+
+        function getProfileGridRect() {
+            const layoutRect = layoutEl.getBoundingClientRect();
+            return {
+                left: layoutRect.left + profileCardEl.offsetLeft,
+                top: layoutRect.top + profileCardEl.offsetTop,
+                width: profileCardEl.offsetWidth,
+                height: profileCardEl.offsetHeight
+            };
+        }
+
+        function getAppliedProfileRect() {
+            return {
+                left: parseFloat(profileCardEl.style.left) || 0,
+                top: parseFloat(profileCardEl.style.top) || 0,
+                width: parseFloat(profileCardEl.style.width) || profileCardEl.offsetWidth,
+                height: parseFloat(profileCardEl.style.height) || profileCardEl.offsetHeight
+            };
+        }
+
+        function getProfileContentEls() {
+            return [...profileCardEl.querySelectorAll(':scope > .profile-header, :scope > .menu-label, :scope > .menu-shell')];
+        }
+
+        function getProfileContentRect() {
+            const rects = getProfileContentEls().map(el => el.getBoundingClientRect());
+            return {
+                left: Math.min(...rects.map(rect => rect.left)),
+                top: Math.min(...rects.map(rect => rect.top))
+            };
+        }
+
+        function playProfileContentFlip(beforeRect) {
+            const afterRect = getProfileContentRect();
+            const dx = beforeRect.left - afterRect.left;
+            const dy = beforeRect.top - afterRect.top;
+            const contentEls = getProfileContentEls();
+
+            contentEls.forEach(el => {
+                el.style.transition = 'none';
+                el.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+            });
+            void profileCardEl.offsetWidth;
+
+            requestAnimationFrame(() => {
+                contentEls.forEach(el => {
+                    el.style.transition = 'transform 0.64s cubic-bezier(0.22, 1, 0.36, 1)';
+                    el.style.transform = 'translate3d(0, 0, 0)';
+                });
+
+                setTimeout(() => {
+                    contentEls.forEach(el => {
+                        el.style.transition = '';
+                        el.style.transform = '';
+                    });
+                }, 700);
+            });
+        }
+
+        function clearProfileDockCleanup() {
+            if (!profileDockCleanupTimer) return;
+            clearTimeout(profileDockCleanupTimer);
+            profileDockCleanupTimer = null;
+        }
+
+        function applyProfileRect(rect, docked = isMenuSideMode) {
+            profileCardEl.style.left = `${rect.left}px`;
+            profileCardEl.style.top = `${rect.top}px`;
+            profileCardEl.style.width = `${rect.width}px`;
+            profileCardEl.style.height = `${rect.height}px`;
+            profileCardEl.style.borderRadius = docked ? '30px' : '';
+        }
+
+        function dockProfileCard() {
+            applyProfileRect(getDockProfileRect(), true);
+        }
+
+        function finalizeProfileHomeDock() {
+            if (isMenuSideMode) return;
+            clearProfileDockCleanup();
+            const dockedRect = getAppliedProfileRect();
+
+            profileCardEl.classList.add('home-hover-suppressed');
+            profileCardEl.classList.remove('side-dock');
+            profileCardEl.classList.remove('returning-home');
+            profileCardEl.style.transition = 'none';
+            profileCardEl.style.left = '';
+            profileCardEl.style.top = '';
+            profileCardEl.style.width = '';
+            profileCardEl.style.height = '';
+            profileCardEl.style.borderRadius = '';
+
+            const gridRect = getProfileGridRect();
+            const dx = dockedRect.left - gridRect.left;
+            const dy = dockedRect.top - gridRect.top;
+            const shouldFlipHome = Math.hypot(dx, dy) > 0.75;
+
+            const releaseHomeHoverSuppression = () => {
+                profileCardEl.classList.remove('home-hover-suppressed');
+                profileCardEl.removeEventListener('pointerleave', releaseHomeHoverSuppression);
+            };
+
+            if (shouldFlipHome) {
+                profileCardEl.style.setProperty('--shift-x', `${dx}px`);
+                profileCardEl.style.setProperty('--shift-y', `${dy}px`);
+                void profileCardEl.offsetWidth;
+            } else {
+                profileCardEl.style.setProperty('--shift-x', '0px');
+                profileCardEl.style.setProperty('--shift-y', '0px');
+            }
+
+            requestAnimationFrame(() => {
+                profileCardEl.style.transition = '';
+                if (shouldFlipHome) {
+                    profileCardEl.style.setProperty('--shift-x', '0px');
+                    profileCardEl.style.setProperty('--shift-y', '0px');
+                }
+                if (profileCardEl.matches(':hover')) {
+                    profileCardEl.addEventListener('pointerleave', releaseHomeHoverSuppression, { once: true });
+                } else {
+                    releaseHomeHoverSuppression();
+                }
+                profileHomeRect = null;
+                scheduleMenuHoverSync();
+            });
+        }
+
+        function setNonMenuCardsHidden(hidden) {
+            const cards = [...layoutEl.querySelectorAll(':scope > .glass:not(.profile-card)')];
+            cards.forEach((card, index) => {
+                const delayIndex = hidden ? index : cards.length - 1 - index;
+                card.classList.add('detail-transition');
+                card.style.transitionDelay = `${delayIndex * 55}ms`;
+                card.classList.toggle('detail-hidden', hidden);
+
+                clearTimeout(card._detailModeTimer);
+                card._detailModeTimer = setTimeout(() => {
+                    card.style.transitionDelay = '';
+                    if (!hidden) {
+                        card.classList.remove('detail-transition');
+                    }
+                    card._detailModeTimer = null;
+                }, delayIndex * 55 + 520);
+            });
+        }
+
+        function enterMenuSideMode() {
+            clearProfileDockCleanup();
+            profileCardEl.classList.remove('home-hover-suppressed');
+            profileCardEl.classList.remove('returning-home');
+            profileCardEl.style.setProperty('--tilt-x', '0deg');
+            profileCardEl.style.setProperty('--tilt-y', '0deg');
+
+            if (isMenuSideMode) {
+                profileCardEl.style.transition = '';
+                dockProfileCard();
+                return;
+            }
+
+            const isReturningHome = profileCardEl.classList.contains('side-dock');
+            isMenuSideMode = true;
+
+            if (!isReturningHome) {
+                profileHomeRect = getProfileGridRect();
+                profileCardEl.classList.add('side-dock');
+                profileCardEl.style.transition = 'none';
+                applyProfileRect(profileHomeRect, true);
+                void profileCardEl.offsetWidth;
+            } else {
+                const currentRect = getAppliedProfileRect();
+                profileCardEl.style.transition = 'none';
+                applyProfileRect(currentRect, true);
+                void profileCardEl.offsetWidth;
+            }
+
+            profileCardEl.style.transition = '';
+            setNonMenuCardsHidden(true);
+            requestAnimationFrame(() => {
+                dockProfileCard();
+                scheduleMenuHoverSync();
+            });
+        }
+
+        function exitMenuSideMode() {
+            if (!isMenuSideMode && !profileCardEl.classList.contains('side-dock')) return;
+
+            isMenuSideMode = false;
+            clearProfileDockCleanup();
+            setNonMenuCardsHidden(false);
+            const contentRect = getProfileContentRect();
+            const currentRect = getAppliedProfileRect();
+            profileCardEl.style.transition = 'none';
+            applyProfileRect(currentRect, true);
+            profileCardEl.classList.add('returning-home');
+            playProfileContentFlip(contentRect);
+            void profileCardEl.offsetWidth;
+            profileCardEl.style.transition = '';
+
+            if (profileHomeRect) {
+                requestAnimationFrame(() => applyProfileRect(profileHomeRect, false));
+            }
+
+            const cleanupProfileDock = (e) => {
+                if (e && e.propertyName !== 'height') return;
+                profileCardEl.removeEventListener('transitionend', cleanupProfileDock);
+                finalizeProfileHomeDock();
+                scheduleMenuHoverSync();
+            };
+            profileCardEl.addEventListener('transitionend', cleanupProfileDock);
+            profileDockCleanupTimer = setTimeout(cleanupProfileDock, 760);
+        }
+
+        menuLinks.forEach(link => {
+            link.addEventListener('mouseenter', (e) => {
+                rememberMenuPointer(e);
+                menuHoverReturnId++;
+                menuShell.classList.add('is-hovering');
+                clearMenuPreview();
+                link.classList.add('is-preview');
+                hoverMenuIndicator.move(link);
+            });
+
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                rememberMenuPointer(e);
+                clearMenuPreview();
+                menuLinks.forEach(l => l.classList.remove('active'));
+                e.currentTarget.classList.add('active', 'is-preview');
+                hoverMenuIndicator.syncTo(solidMenuIndicator.getY());
+                solidMenuIndicator.move(e.currentTarget);
+                hoverMenuIndicator.move(e.currentTarget);
+
+                const target = e.currentTarget.getAttribute('href');
+                if (detailMenuTargets.has(target)) {
+                    enterMenuSideMode();
+                } else {
+                    exitMenuSideMode();
+                }
+                scheduleMenuHoverSync();
+            });
+
+            link.addEventListener('pointerdown', () => setMenuIndicatorPress(true));
+            link.addEventListener('pointerup', () => setMenuIndicatorPress(false));
+            link.addEventListener('pointercancel', () => setMenuIndicatorPress(false));
+            link.addEventListener('pointerleave', () => setMenuIndicatorPress(false));
+        });
+
+        menuShell.addEventListener('mouseleave', () => {
+            const returnId = ++menuHoverReturnId;
+            clearMenuPreview();
+            hoverMenuIndicator.move(getActiveMenuLink(), true, () => {
+                if (returnId === menuHoverReturnId) {
+                    menuShell.classList.remove('is-hovering');
+                }
+            });
+        });
+
+        const musicCard = document.getElementById('music-card');
+        const musicArt = document.getElementById('music-art');
+        const musicTitle = document.getElementById('music-title');
+        const musicPlayButton = document.getElementById('music-play');
+        const musicRandomButton = document.getElementById('music-random');
+        const musicProgressShell = document.getElementById('music-progress-shell');
+        const musicProgress = document.getElementById('music-progress');
+        const musicProgressExpansion = document.getElementById('music-progress-expansion');
+        const musicTime = document.getElementById('music-time');
+        const musicTrackDots = document.querySelectorAll('.music-dot');
+        const MUSIC_TRACKS = [
+            {
+                title: '梦境寻踪',
+                src: '梦境寻踪.mp3',
+                art: null,
+                fallbackDuration: 0
+            },
+            {
+                title: 'Numb - Linkin Park',
+                src: 'Numb - Linkin Park.mp3',
+                art: 'music-img.jpg',
+                fallbackDuration: 187
+            }
+        ];
+
+        const musicAudio = new Audio();
+        musicAudio.preload = 'metadata';
+        let musicTrackIndex = 0;
+        let musicDuration = MUSIC_TRACKS[0].fallbackDuration;
+        let musicCurrentTime = 0;
+        let isMusicPlaying = false;
+        let musicProgressRaf = 0;
+        let musicProgressExpandTimer = null;
+        let musicVisualAnchorTime = 0;
+        let musicVisualAnchorNow = performance.now();
+
+        function formatMusicTime(seconds) {
+            if (!Number.isFinite(seconds)) return '--:--';
+            const roundedSeconds = Math.round(seconds);
+            const upperBound = musicDuration > 0 ? Math.round(musicDuration) : roundedSeconds;
+            const safeSeconds = Math.max(0, Math.min(upperBound, roundedSeconds));
+            const minutes = Math.floor(safeSeconds / 60);
+            const rest = String(safeSeconds % 60).padStart(2, '0');
+            return `${minutes}:${rest}`;
+        }
+
+        function formatMusicDuration() {
+            return musicDuration > 0 ? formatMusicTime(musicDuration) : '--:--';
+        }
+
+        function setMusicPlaying(nextState) {
+            isMusicPlaying = nextState;
+            musicPlayButton.classList.toggle('is-playing', isMusicPlaying);
+            musicPlayButton.setAttribute('aria-pressed', String(isMusicPlaying));
+            musicPlayButton.setAttribute('aria-label', isMusicPlaying ? '暂停音乐' : '播放音乐');
+        }
+
+        function clampMusicTime(seconds) {
+            const nextTime = Number.isFinite(seconds) ? seconds : 0;
+            if (musicDuration <= 0) {
+                return Math.max(0, nextTime);
+            }
+            return Math.max(0, Math.min(musicDuration, nextTime));
+        }
+
+        function anchorMusicProgressVisual(seconds = musicCurrentTime) {
+            musicVisualAnchorTime = clampMusicTime(seconds);
+            musicVisualAnchorNow = performance.now();
+        }
+
+        function getMusicVisualTime() {
+            if (musicAudio.paused || musicAudio.ended) {
+                return musicCurrentTime;
+            }
+            return clampMusicTime(musicVisualAnchorTime + ((performance.now() - musicVisualAnchorNow) / 1000));
+        }
+
+        function updateMusicProgress(seconds, shouldSeek = false) {
+            musicCurrentTime = clampMusicTime(seconds);
+            const ratio = musicDuration > 0 ? musicCurrentTime / musicDuration : 0;
+            const percent = ratio * 100;
+            musicProgress.style.setProperty('--music-progress', `${percent}%`);
+            musicProgress.style.setProperty('--music-progress-ratio', String(ratio));
+            musicCard.style.setProperty('--music-progress-ratio', String(ratio));
+            musicProgress.setAttribute('aria-valuenow', String(Math.round(musicCurrentTime)));
+            musicProgress.setAttribute('aria-valuemax', String(Math.round(musicDuration)));
+            musicProgress.setAttribute('aria-valuetext', `${formatMusicTime(musicCurrentTime)} / ${formatMusicDuration()}`);
+            musicTime.textContent = `${formatMusicTime(musicCurrentTime)}/${formatMusicDuration()}`;
+
+            if (shouldSeek && musicDuration > 0) {
+                const seekLimit = Number.isFinite(musicAudio.duration) ? musicAudio.duration : musicDuration;
+                musicAudio.currentTime = Math.max(0, Math.min(seekLimit, musicCurrentTime));
+                anchorMusicProgressVisual(musicCurrentTime);
+            }
+        }
+
+        function updateMusicProgressFromPointer(e) {
+            if (musicDuration <= 0) return;
+            const rect = musicProgress.getBoundingClientRect();
+            const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            updateMusicProgress(ratio * musicDuration, true);
+        }
+
+        function stopMusicProgressLoop() {
+            if (!musicProgressRaf) return;
+            cancelAnimationFrame(musicProgressRaf);
+            musicProgressRaf = 0;
+        }
+
+        function syncMusicProgressLoop() {
+            const audioTime = Math.min(musicAudio.currentTime, musicDuration);
+            const visualTime = getMusicVisualTime();
+            if (Math.abs(audioTime - visualTime) > 0.24) {
+                anchorMusicProgressVisual(audioTime);
+                updateMusicProgress(audioTime);
+            } else {
+                updateMusicProgress(visualTime);
+            }
+            if (!musicAudio.paused && !musicAudio.ended) {
+                musicProgressRaf = requestAnimationFrame(syncMusicProgressLoop);
+            }
+        }
+
+        function startMusicProgressLoop() {
+            stopMusicProgressLoop();
+            musicProgressRaf = requestAnimationFrame(syncMusicProgressLoop);
+        }
+
+        function updateMusicTrackUI() {
+            const track = MUSIC_TRACKS[musicTrackIndex];
+            musicTitle.textContent = track.title;
+            musicArt.textContent = '';
+
+            if (track.art) {
+                const image = document.createElement('img');
+                image.src = track.art;
+                image.alt = track.title;
+                musicArt.appendChild(image);
+            } else {
+                musicArt.textContent = '🎵';
+            }
+
+            musicTrackDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === musicTrackIndex);
+            });
+        }
+
+        function loadMusicTrack(index, shouldPlay = false) {
+            const nextIndex = (index + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
+            const track = MUSIC_TRACKS[nextIndex];
+            stopMusicProgressLoop();
+            musicTrackIndex = nextIndex;
+            musicDuration = track.fallbackDuration;
+            musicCurrentTime = 0;
+            musicVisualAnchorTime = 0;
+            musicVisualAnchorNow = performance.now();
+            musicAudio.src = encodeURI(track.src);
+            musicAudio.load();
+            setMusicPlaying(false);
+            updateMusicTrackUI();
+            updateMusicProgress(0);
+
+            if (shouldPlay) {
+                musicAudio.play().catch(() => setMusicPlaying(false));
+            }
+        }
+
+        function switchMusicTrack(direction) {
+            const shouldResume = !musicAudio.paused && !musicAudio.ended;
+            loadMusicTrack(musicTrackIndex + direction, shouldResume);
+        }
+
+        function switchToRandomMusicTrack() {
+            if (MUSIC_TRACKS.length < 2) return;
+
+            const shouldResume = !musicAudio.paused && !musicAudio.ended;
+            let nextIndex = musicTrackIndex;
+            while (nextIndex === musicTrackIndex) {
+                nextIndex = Math.floor(Math.random() * MUSIC_TRACKS.length);
+            }
+            loadMusicTrack(nextIndex, shouldResume);
+        }
+
+        musicRandomButton.addEventListener('click', switchToRandomMusicTrack);
+
+        musicPlayButton.addEventListener('click', () => {
+            if (musicAudio.ended) {
+                updateMusicProgress(0, true);
+            }
+
+            if (musicAudio.paused) {
+                musicAudio.play().catch(() => setMusicPlaying(false));
+            } else {
+                musicAudio.pause();
+            }
+        });
+
+        musicAudio.addEventListener('play', () => {
+            setMusicPlaying(true);
+            anchorMusicProgressVisual(musicAudio.currentTime);
+            startMusicProgressLoop();
+        });
+        musicAudio.addEventListener('pause', () => {
+            setMusicPlaying(false);
+            stopMusicProgressLoop();
+            updateMusicProgress(Math.min(musicAudio.currentTime, musicDuration));
+            anchorMusicProgressVisual(musicCurrentTime);
+        });
+        musicAudio.addEventListener('loadedmetadata', () => {
+            if (Number.isFinite(musicAudio.duration) && musicAudio.duration > 0) {
+                musicDuration = musicAudio.duration;
+                updateMusicProgress(Math.min(musicAudio.currentTime, musicDuration));
+                anchorMusicProgressVisual(musicCurrentTime);
+            }
+        });
+        musicAudio.addEventListener('timeupdate', () => {
+            if (musicAudio.paused || musicAudio.ended) {
+                updateMusicProgress(Math.min(musicAudio.currentTime, musicDuration));
+            }
+        });
+        musicAudio.addEventListener('ended', () => {
+            setMusicPlaying(false);
+            stopMusicProgressLoop();
+            updateMusicProgress(musicDuration);
+            anchorMusicProgressVisual(musicDuration);
+        });
+
+        musicProgressShell.addEventListener('mousedown', (e) => e.stopPropagation());
+
+        function syncMusicProgressExpansionOrigin() {
+            let left = 0;
+            let top = 0;
+            let node = musicProgress;
+
+            while (node && node !== musicCard) {
+                left += node.offsetLeft || 0;
+                top += node.offsetTop || 0;
+                node = node.offsetParent;
+            }
+
+            musicCard.style.setProperty('--progress-origin-left', `${left}px`);
+            musicCard.style.setProperty('--progress-origin-top', `${top}px`);
+            musicCard.style.setProperty('--progress-origin-width', `${musicProgress.offsetWidth}px`);
+            musicCard.style.setProperty('--progress-origin-height', `${musicProgress.offsetHeight}px`);
+        }
+
+        musicProgressShell.addEventListener('mouseenter', () => {
+            clearTimeout(musicProgressExpandTimer);
+            syncMusicProgressExpansionOrigin();
+            musicProgressExpandTimer = setTimeout(() => {
+                musicCard.classList.add('progress-expanded');
+                musicProgressExpandTimer = null;
+            }, 600);
+        });
+
+        musicProgressShell.addEventListener('mouseleave', () => {
+            clearTimeout(musicProgressExpandTimer);
+            musicProgressExpandTimer = null;
+        });
+
+        musicCard.addEventListener('mouseleave', () => {
+            clearTimeout(musicProgressExpandTimer);
+            musicProgressExpandTimer = null;
+            musicCard.classList.remove('progress-expanded');
+        });
+
+        function updateMusicProgressFromCardPointer(e) {
+            if (musicDuration <= 0) return;
+            const rect = musicCard.getBoundingClientRect();
+            const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            updateMusicProgress(ratio * musicDuration, true);
+        }
+
+        musicProgressExpansion.addEventListener('mousedown', (e) => e.stopPropagation());
+
+        musicProgressExpansion.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updateFlatCursorTarget(e);
+            musicProgressExpansion.classList.add('is-dragging');
+            musicProgressExpansion.setPointerCapture(e.pointerId);
+            updateMusicProgressFromCardPointer(e);
+        });
+
+        musicProgressExpansion.addEventListener('pointermove', (e) => {
+            if (!musicProgressExpansion.classList.contains('is-dragging')) return;
+            updateFlatCursorTarget(e);
+            updateMusicProgressFromCardPointer(e);
+        });
+
+        function stopExpandedMusicProgressDrag(e) {
+            musicProgressExpansion.classList.remove('is-dragging');
+            if (musicProgressExpansion.hasPointerCapture(e.pointerId)) {
+                musicProgressExpansion.releasePointerCapture(e.pointerId);
+            }
+        }
+
+        musicProgressExpansion.addEventListener('pointerup', stopExpandedMusicProgressDrag);
+        musicProgressExpansion.addEventListener('pointercancel', stopExpandedMusicProgressDrag);
+
+        musicProgressShell.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            updateFlatCursorTarget(e);
+            musicProgress.classList.add('is-dragging');
+            musicProgressShell.setPointerCapture(e.pointerId);
+            updateMusicProgressFromPointer(e);
+        });
+
+        musicProgressShell.addEventListener('pointermove', (e) => {
+            if (!musicProgress.classList.contains('is-dragging')) return;
+            updateFlatCursorTarget(e);
+            updateMusicProgressFromPointer(e);
+        });
+
+        function stopMusicProgressDrag(e) {
+            musicProgress.classList.remove('is-dragging');
+            if (musicProgressShell.hasPointerCapture(e.pointerId)) {
+                musicProgressShell.releasePointerCapture(e.pointerId);
+            }
+        }
+
+        musicProgressShell.addEventListener('pointerup', stopMusicProgressDrag);
+        musicProgressShell.addEventListener('pointercancel', stopMusicProgressDrag);
+
+        musicProgress.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                updateMusicProgress(musicCurrentTime + 5, true);
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                updateMusicProgress(musicCurrentTime - 5, true);
+            }
+            if (e.key === 'Home') {
+                e.preventDefault();
+                updateMusicProgress(0, true);
+            }
+            if (e.key === 'End') {
+                e.preventDefault();
+                updateMusicProgress(musicDuration, true);
+            }
+        });
+
+        let musicSwipePointerId = null;
+        let musicSwipeStartX = 0;
+        let musicSwipeStartY = 0;
+
+        musicCard.addEventListener('pointerdown', (e) => {
+            if (e.target.closest('.music-progress-shell, .music-progress-expansion, .music-play, .music-random')) return;
+            musicSwipePointerId = e.pointerId;
+            musicSwipeStartX = e.clientX;
+            musicSwipeStartY = e.clientY;
+            musicCard.setPointerCapture(e.pointerId);
+        });
+
+        musicCard.addEventListener('pointermove', (e) => {
+            if (e.pointerId !== musicSwipePointerId) return;
+            const dx = e.clientX - musicSwipeStartX;
+            const dy = e.clientY - musicSwipeStartY;
+            if (Math.abs(dx) > 14 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+                e.preventDefault();
+                updateFlatCursorTarget(e);
+            }
+        });
+
+        function stopMusicSwipe(e) {
+            if (e.pointerId !== musicSwipePointerId) return;
+            const dx = e.clientX - musicSwipeStartX;
+            const dy = e.clientY - musicSwipeStartY;
+            musicSwipePointerId = null;
+
+            if (musicCard.hasPointerCapture(e.pointerId)) {
+                musicCard.releasePointerCapture(e.pointerId);
+            }
+
+            if (Math.abs(dx) >= 45 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+                switchMusicTrack(dx < 0 ? 1 : -1);
+            }
+        }
+
+        musicCard.addEventListener('pointerup', stopMusicSwipe);
+        musicCard.addEventListener('pointercancel', stopMusicSwipe);
+
+        loadMusicTrack(0);
+        requestAnimationFrame(syncMusicProgressExpansionOrigin);
+        window.addEventListener('resize', syncMusicProgressExpansionOrigin);
+
+        const timerPage = document.getElementById('timer-page');
+        const timerContainer = document.getElementById('timer-container');
+        const timerClockGhost = document.getElementById('timer-clock-ghost');
+        const recordsCard = document.getElementById('records-card');
+        const timeCard = document.getElementById('time-card');
+        const timerClose = document.getElementById('timer-close');
+        let timeCardRestoreTimer = null;
+
+        function playCardBounce(card, depth = 0.95, duration = 150, pressDuration = 0) {
+            if (card._bounceTimeout) {
+                clearTimeout(card._bounceTimeout);
+                card._bounceTimeout = null;
+            }
+
+            card._currentScale = depth;
+            card.style.transition = pressDuration > 0 ? `transform ${pressDuration}ms ease-out` : 'none';
+            card.style.transform = getCardPressTransform(card, depth);
+            if (pressDuration === 0) {
+                void card.offsetWidth;
+            }
+            setTimeout(() => {
+                card.style.transition = `transform ${duration}ms ease-out`;
+                card.style.transform = getCardPressTransform(card, 1);
+                card._currentScale = 1;
+                card._bounceTimeout = setTimeout(() => {
+                    card.style.transition = '';
+                    card.style.transform = '';
+                    card._bounceTimeout = null;
+                }, duration + 10);
+            }, pressDuration);
+        }
+
+        function setTimerStartRect(rect) {
+            const radius = getComputedStyle(timeCard).borderRadius;
+            timerPage.style.setProperty('--start-left', rect.left + 'px');
+            timerPage.style.setProperty('--start-top', rect.top + 'px');
+            timerPage.style.setProperty('--start-width', rect.width + 'px');
+            timerPage.style.setProperty('--start-height', rect.height + 'px');
+            timerPage.style.setProperty('--start-radius', radius);
+            timerContainer.style.setProperty('--start-left', rect.left + 'px');
+            timerContainer.style.setProperty('--start-top', rect.top + 'px');
+            timerContainer.style.setProperty('--start-width', rect.width + 'px');
+            timerContainer.style.setProperty('--start-height', rect.height + 'px');
+            timerContainer.style.setProperty('--start-radius', radius);
+        }
+
+        timeCard.style.cursor = 'pointer';
+        timeCard.addEventListener('click', () => {
+            if (timerPage.classList.contains('active') || timerPage.classList.contains('opening')) return;
+            clearTimeout(timeCardRestoreTimer);
+            const rect = timeCard.getBoundingClientRect();
+            timerClockGhost.innerHTML = `<div class="time-display">${document.getElementById('time').innerHTML}</div>`;
+            timerContainer.style.cssText = '';
+            recordsCard.style.cssText = '';
+            setTimerStartRect(rect);
+            recordsCard.style.transition = 'none';
+            recordsCard.style.left = rect.left + 'px';
+            recordsCard.style.top = rect.top + 'px';
+            recordsCard.style.width = rect.width + 'px';
+            recordsCard.style.height = rect.height + 'px';
+            recordsCard.style.borderRadius = getComputedStyle(timeCard).borderRadius;
+            recordsCard.style.opacity = '0';
+            recordsCard.style.transform = 'scale(0.72)';
+            recordsCard.style.filter = 'blur(12px) saturate(1.25)';
+            timeCard.style.opacity = '0';
+            const activeTimerTab = document.querySelector('.timer-tab.active')?.dataset.tab || 'stopwatch';
+            timerPage.classList.toggle('stopwatch-mode', activeTimerTab === 'stopwatch');
+            timerPage.classList.toggle('countdown-mode', activeTimerTab === 'countdown');
+            timerPage.classList.add('opening');
+            void timerContainer.offsetWidth;
+            void recordsCard.offsetWidth;
+            requestAnimationFrame(() => {
+                recordsCard.style.transition = '';
+                recordsCard.style.left = '';
+                recordsCard.style.top = '';
+                recordsCard.style.width = '';
+                recordsCard.style.height = '';
+                recordsCard.style.borderRadius = '';
+                recordsCard.style.opacity = '';
+                recordsCard.style.transform = '';
+                recordsCard.style.filter = '';
+                timerPage.classList.add('active');
+                timerPage.classList.remove('opening');
+            });
+        });
+
+        timerClose.addEventListener('click', () => {
+            const rect = timeCard.getBoundingClientRect();
+            const bg = timerPage.querySelector('.timer-bg');
+            timerClockGhost.innerHTML = `<div class="time-display">${document.getElementById('time').innerHTML}</div>`;
+            timerPage.classList.add('closing');
+            bg.style.transition = 'opacity 0.35s ease-in';
+            bg.style.opacity = '0';
+            timerContainer.style.transition = 'left 0.35s ease-in, top 0.35s ease-in, width 0.35s ease-in, height 0.35s ease-in, border-radius 0.35s ease-in';
+            timerContainer.style.left = rect.left + 'px';
+            timerContainer.style.top = rect.top + 'px';
+            timerContainer.style.width = rect.width + 'px';
+            timerContainer.style.height = rect.height + 'px';
+            timerContainer.style.borderRadius = getComputedStyle(timeCard).borderRadius;
+            timerContainer.style.transform = 'none';
+            recordsCard.style.transition = 'left 0.35s ease-in, top 0.35s ease-in, width 0.35s ease-in, height 0.35s ease-in, border-radius 0.35s ease-in, opacity 0.25s ease-in, filter 0.25s ease-in, transform 0.35s ease-in';
+            recordsCard.style.left = rect.left + 'px';
+            recordsCard.style.top = rect.top + 'px';
+            recordsCard.style.width = rect.width + 'px';
+            recordsCard.style.height = rect.height + 'px';
+            recordsCard.style.borderRadius = getComputedStyle(timeCard).borderRadius;
+            recordsCard.style.opacity = '0';
+            recordsCard.style.filter = 'blur(16px) saturate(1.35)';
+            recordsCard.style.transform = 'scale(0.72)';
+            clearTimeout(timeCardRestoreTimer);
+            timeCardRestoreTimer = setTimeout(() => {
+                timeCard.style.opacity = '1';
+            }, 330);
+            setTimeout(() => {
+                timerPage.classList.remove('active');
+                timerPage.classList.remove('opening');
+                timerPage.classList.remove('closing');
+                timerPage.classList.remove('liquid-merging');
+                timerContainer.style.cssText = '';
+                recordsCard.style.cssText = '';
+                timerClockGhost.innerHTML = '';
+                timeCard.style.opacity = '';
+                bg.style.cssText = '';
+                playCardBounce(timeCard, 0.9, 200, 110);
+            }, 370);
+        });
+
+        document.querySelectorAll('.timer-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                const fromTab = document.querySelector('.timer-tab.active')?.dataset.tab;
+                document.querySelectorAll('.timer-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                timerPage.classList.toggle('stopwatch-mode', targetTab === 'stopwatch');
+                timerPage.classList.toggle('countdown-mode', targetTab === 'countdown');
+
+                if (fromTab === 'stopwatch' && targetTab === 'countdown') {
+                    timerPage.classList.add('liquid-merging');
+                    setTimeout(() => timerPage.classList.remove('liquid-merging'), 680);
+                }
+
+                if (targetTab === 'countdown' && !cdRunning) {
+                    updateCDDisplay();
+                }
+
+                document.getElementById('stopwatch-panel').classList.toggle('hidden', targetTab !== 'stopwatch');
+                document.getElementById('countdown-panel').classList.toggle('hidden', targetTab !== 'countdown');
+            });
+        });
+
+        function createTimerSegHTML() {
+            let html = '';
+            for (let i = 0; i < 2; i++) {
+                html += `<div class="seg-timer-digit">${createDigitHTML()}</div>`;
+            }
+            return html;
+        }
+
+        function setTimerDigit(container, tens, ones) {
+            const digits = container.querySelectorAll('.seg-timer-digit');
+            setDigit(digits[0], tens);
+            setDigit(digits[1], ones);
+        }
+
+        const swSegDisplay = document.getElementById('stopwatch-display');
+        swSegDisplay.innerHTML =
+            createTimerSegHTML() +
+            '<div class="seg-timer-colon"><div class="seg-timer-dot"></div><div class="seg-timer-dot"></div></div>' +
+            createTimerSegHTML() +
+            '<div class="seg-timer-dot-sep"></div>' +
+            createTimerSegHTML() +
+            `<div class="seg-timer-digit">${createDigitHTML()}</div>`;
+
+        let swInterval = null;
+        let swStart = 0;
+        let swElapsed = 0;
+        let swRunning = false;
+        let recordCount = 0;
+
+        const swStartBtn = document.getElementById('sw-start');
+        const swResetBtn = document.getElementById('sw-reset');
+        const swRecordBtn = document.getElementById('sw-record');
+        const recordsList = document.getElementById('records-list');
+        const recordsScrollbar = document.getElementById('records-scrollbar');
+        const recordsScrollThumb = document.getElementById('records-scroll-thumb');
+        let recordsThumbDragging = false;
+        let recordsThumbStartY = 0;
+        let recordsScrollStartTop = 0;
+
+        function getRecordsScrollMetrics() {
+            const maxScroll = Math.max(0, recordsList.scrollHeight - recordsList.clientHeight);
+            const trackHeight = recordsScrollbar.clientHeight;
+            const thumbHeight = maxScroll > 0
+                ? Math.max(30, (recordsList.clientHeight / recordsList.scrollHeight) * trackHeight)
+                : trackHeight;
+            const maxThumbTop = Math.max(0, trackHeight - thumbHeight);
+            return { maxScroll, trackHeight, thumbHeight, maxThumbTop };
+        }
+
+        function updateRecordsScrollbar() {
+            const { maxScroll, thumbHeight, maxThumbTop } = getRecordsScrollMetrics();
+            recordsCard.classList.toggle('records-scrollable', maxScroll > 1);
+            recordsScrollThumb.style.height = `${thumbHeight}px`;
+            const thumbTop = maxScroll > 0 ? (recordsList.scrollTop / maxScroll) * maxThumbTop : 0;
+            recordsScrollThumb.style.transform = `translateY(${thumbTop}px)`;
+        }
+
+        recordsList.addEventListener('scroll', updateRecordsScrollbar);
+        window.addEventListener('resize', updateRecordsScrollbar);
+
+        const recordsObserver = new MutationObserver(() => requestAnimationFrame(updateRecordsScrollbar));
+        recordsObserver.observe(recordsList, { childList: true });
+
+        recordsScrollbar.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updateFlatCursorTarget(e);
+            const { maxScroll, thumbHeight, maxThumbTop } = getRecordsScrollMetrics();
+            if (maxScroll <= 0) return;
+
+            if (e.target === recordsScrollbar) {
+                const trackRect = recordsScrollbar.getBoundingClientRect();
+                const targetTop = Math.max(0, Math.min(maxThumbTop, e.clientY - trackRect.top - thumbHeight / 2));
+                recordsList.scrollTop = (targetTop / maxThumbTop) * maxScroll;
+            }
+
+            recordsThumbDragging = true;
+            recordsThumbStartY = e.clientY;
+            recordsScrollStartTop = recordsList.scrollTop;
+            recordsScrollbar.classList.add('is-dragging');
+            recordsScrollbar.setPointerCapture(e.pointerId);
+        });
+
+        recordsScrollbar.addEventListener('pointermove', (e) => {
+            if (!recordsThumbDragging) return;
+            e.preventDefault();
+            updateFlatCursorTarget(e);
+            const { maxScroll, maxThumbTop } = getRecordsScrollMetrics();
+            const dragRatio = maxThumbTop > 0 ? (e.clientY - recordsThumbStartY) / maxThumbTop : 0;
+            recordsList.scrollTop = recordsScrollStartTop + dragRatio * maxScroll;
+        });
+
+        function stopRecordsScrollbarDrag(e) {
+            if (!recordsThumbDragging) return;
+            recordsThumbDragging = false;
+            recordsScrollbar.classList.remove('is-dragging');
+            if (recordsScrollbar.hasPointerCapture(e.pointerId)) {
+                recordsScrollbar.releasePointerCapture(e.pointerId);
+            }
+            updateFlatCursorTarget(e);
+        }
+
+        recordsScrollbar.addEventListener('pointerup', stopRecordsScrollbarDrag);
+        recordsScrollbar.addEventListener('pointercancel', stopRecordsScrollbarDrag);
+        updateRecordsScrollbar();
+
+        function updateSWDisplay(ms) {
+            const elapsed = Math.max(0, Math.floor(ms));
+            const m = Math.floor(elapsed / 60000);
+            const s = Math.floor((elapsed % 60000) / 1000);
+            const ms3 = elapsed % 1000;
+            const segs = swSegDisplay.querySelectorAll('.seg-timer-digit');
+            setDigit(segs[0], Math.floor(m / 10));
+            setDigit(segs[1], m % 10);
+            setDigit(segs[2], Math.floor(s / 10));
+            setDigit(segs[3], s % 10);
+            setDigit(segs[4], Math.floor(ms3 / 100));
+            setDigit(segs[5], Math.floor((ms3 % 100) / 10));
+            setDigit(segs[6], ms3 % 10);
+        }
+
+        function formatSWText(ms) {
+            const elapsed = Math.max(0, Math.floor(ms));
+            const m = Math.floor(elapsed / 60000);
+            const s = Math.floor((elapsed % 60000) / 1000);
+            const ms3 = elapsed % 1000;
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms3).padStart(3, '0')}`;
+        }
+
+        updateSWDisplay(0);
+
+        function updateSW() {
+            swElapsed = performance.now() - swStart;
+            updateSWDisplay(swElapsed);
+        }
+
+        swStartBtn.addEventListener('click', () => {
+            if (swRunning) {
+                cancelAnimationFrame(swInterval);
+                swRunning = false;
+                swStartBtn.textContent = '继续';
+                swRecordBtn.disabled = false;
+                return;
+            }
+
+            swStart = performance.now() - swElapsed;
+            swRunning = true;
+            swStartBtn.textContent = '暂停';
+            swResetBtn.disabled = false;
+            swRecordBtn.disabled = false;
+            swInterval = requestAnimationFrame(function tick() {
+                updateSW();
+                if (swRunning) {
+                    swInterval = requestAnimationFrame(tick);
+                }
+            });
+        });
+
+        swResetBtn.addEventListener('click', () => {
+            cancelAnimationFrame(swInterval);
+            swRunning = false;
+            swElapsed = 0;
+            updateSWDisplay(0);
+            recordsList.innerHTML = '';
+            recordCount = 0;
+            swStartBtn.disabled = false;
+            swStartBtn.textContent = '开始';
+            swResetBtn.disabled = true;
+            swRecordBtn.disabled = true;
+        });
+
+        swRecordBtn.addEventListener('click', () => {
+            if (!swRunning && swElapsed > 0) {
+                recordCount++;
+                const item = document.createElement('div');
+                item.className = 'record-item';
+                item.innerHTML = `<span class="record-num">#${recordCount}</span><span>${formatSWText(swElapsed)}</span>`;
+                recordsList.prepend(item);
+                swRecordBtn.disabled = true;
+            } else if (swRunning) {
+                recordCount++;
+                const item = document.createElement('div');
+                item.className = 'record-item';
+                item.innerHTML = `<span class="record-num">#${recordCount}</span><span>${formatSWText(swElapsed)}</span>`;
+                recordsList.prepend(item);
+            }
+        });
+
+        let cdHour = 0, cdMin = 0, cdSec = 0;
+        let cdInterval = null;
+        let cdTotal = 0;
+        let cdRemaining = 0;
+        let cdRunning = false;
+        let cdLastTick = 0;
+
+        const cdSegHour = document.getElementById('cd-seg-hour');
+        const cdSegMin = document.getElementById('cd-seg-min');
+        const cdSegSec = document.getElementById('cd-seg-sec');
+        const cdStartBtn = document.getElementById('cd-start');
+        const cdResetBtn = document.getElementById('cd-reset');
+
+        cdSegHour.innerHTML = createTimerSegHTML();
+        cdSegMin.innerHTML = createTimerSegHTML();
+        cdSegSec.innerHTML = createTimerSegHTML();
+
+        function updateCDDisplay() {
+            setTimerDigit(cdSegHour, Math.floor(cdHour / 10), cdHour % 10);
+            setTimerDigit(cdSegMin, Math.floor(cdMin / 10), cdMin % 10);
+            setTimerDigit(cdSegSec, Math.floor(cdSec / 10), cdSec % 10);
+        }
+
+        function updateCDFromRemaining() {
+            const displayRemaining = Math.max(0, Math.ceil(cdRemaining));
+            const h = Math.floor(displayRemaining / 3600);
+            const m = Math.floor((displayRemaining % 3600) / 60);
+            const s = displayRemaining % 60;
+            setTimerDigit(cdSegHour, Math.floor(h / 10), h % 10);
+            setTimerDigit(cdSegMin, Math.floor(m / 10), m % 10);
+            setTimerDigit(cdSegSec, Math.floor(s / 10), s % 10);
+        }
+
+        const cdOvertime = document.getElementById('cd-overtime');
+        const cdOvertimeSeg = document.getElementById('cd-overtime-seg');
+        const cdDisplayWrapper = document.getElementById('cd-display-wrapper');
+        let cdOvertimeTransitionTimer = null;
+        const CD_OVERTIME_ANIMATION_MS = 560;
+        cdOvertimeSeg.innerHTML = createTimerSegHTML() +
+            '<div class="seg-timer-colon"><div class="seg-timer-dot"></div><div class="seg-timer-dot"></div></div>' +
+            createTimerSegHTML() +
+            '<div class="seg-timer-colon"><div class="seg-timer-dot"></div><div class="seg-timer-dot"></div></div>' +
+            createTimerSegHTML();
+
+        function clearCDOvertimeTransition() {
+            if (cdOvertimeTransitionTimer) {
+                clearTimeout(cdOvertimeTransitionTimer);
+                cdOvertimeTransitionTimer = null;
+            }
+        }
+
+        function updateCDOvertimeDisplay(seconds) {
+            const overtime = Math.max(0, Math.floor(seconds));
+            const oH = Math.floor(overtime / 3600);
+            const oM = Math.floor((overtime % 3600) / 60);
+            const oS = overtime % 60;
+            const oSegs = cdOvertimeSeg.querySelectorAll('.seg-timer-digit');
+            setDigit(oSegs[0], Math.floor(oH / 10));
+            setDigit(oSegs[1], oH % 10);
+            setDigit(oSegs[2], Math.floor(oM / 10));
+            setDigit(oSegs[3], oM % 10);
+            setDigit(oSegs[4], Math.floor(oS / 10));
+            setDigit(oSegs[5], oS % 10);
+        }
+
+        function showCDOvertimeTransition() {
+            clearCDOvertimeTransition();
+            cdDisplayWrapper.classList.add('hidden');
+            cdOvertime.classList.remove('hidden', 'is-resetting', 'is-overtime-active');
+            void cdOvertime.offsetWidth;
+            cdOvertime.classList.add('is-entering');
+            cdOvertimeTransitionTimer = setTimeout(() => {
+                cdOvertime.classList.remove('is-entering');
+                cdOvertime.classList.add('is-overtime-active');
+                cdOvertimeTransitionTimer = null;
+            }, CD_OVERTIME_ANIMATION_MS);
+        }
+
+        function resetCDOvertimeView() {
+            const wasOvertimeVisible = !cdOvertime.classList.contains('hidden');
+            clearCDOvertimeTransition();
+
+            if (wasOvertimeVisible) {
+                updateCDOvertimeDisplay(0);
+                cdDisplayWrapper.classList.add('hidden');
+                cdOvertime.classList.remove('hidden', 'is-entering');
+                cdOvertime.classList.add('is-overtime-active');
+                void cdOvertime.offsetWidth;
+                cdOvertime.classList.remove('is-overtime-active');
+                cdOvertime.classList.add('is-resetting');
+                cdOvertimeTransitionTimer = setTimeout(() => {
+                    cdOvertime.classList.remove('is-resetting');
+                    cdOvertime.classList.add('hidden');
+                    cdDisplayWrapper.classList.remove('hidden');
+                    cdOvertimeTransitionTimer = null;
+                }, CD_OVERTIME_ANIMATION_MS);
+                return;
+            }
+
+            cdOvertime.classList.remove('is-entering', 'is-resetting', 'is-overtime-active');
+            cdOvertime.classList.add('hidden');
+            cdDisplayWrapper.classList.remove('hidden');
+        }
+
+        function checkCDStartable() {
+            cdStartBtn.disabled = (cdHour === 0 && cdMin === 0 && cdSec === 0);
+        }
+
+        updateCDDisplay();
+        checkCDStartable();
+
+        const cdGroups = document.querySelectorAll('.cd-group');
+
+        function closeCDWheels() {
+            cdGroups.forEach(group => group.classList.remove('picking'));
+        }
+
+        function setCDUnit(unit, value) {
+            if (unit === 'hour') cdHour = value;
+            else if (unit === 'min') cdMin = value;
+            else cdSec = value;
+            cdTotal = cdHour * 3600 + cdMin * 60 + cdSec;
+            cdRemaining = cdTotal;
+            updateCDDisplay();
+            checkCDStartable();
+        }
+
+        function syncCDWheelSelection(wheel) {
+            const unit = wheel.dataset.unit;
+            const items = wheel._items || [...wheel.querySelectorAll('.cd-wheel-item')];
+            const center = wheel.scrollTop + wheel.clientHeight / 2;
+            let selectedItem = items[0];
+            let selectedDistance = Infinity;
+
+            items.forEach(item => {
+                const itemCenter = item._center;
+                const distance = Math.abs(itemCenter - center);
+                if (distance < selectedDistance) {
+                    selectedDistance = distance;
+                    selectedItem = item;
+                }
+            });
+
+            const value = selectedItem._value;
+            items.forEach(item => item.classList.toggle('selected', item === selectedItem));
+            setCDUnit(unit, value);
+        }
+
+        function buildCDWheel(group) {
+            const unit = group.dataset.unit;
+            const maxVal = unit === 'hour' ? 99 : 59;
+            const wheel = document.createElement('div');
+            wheel.className = 'cd-wheel';
+            wheel.dataset.unit = unit;
+            let scrollSettleTimer = null;
+            wheel.addEventListener('click', (e) => e.stopPropagation());
+            wheel.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
+            wheel.addEventListener('scroll', () => {
+                if (!group.classList.contains('picking')) return;
+                clearTimeout(scrollSettleTimer);
+                scrollSettleTimer = setTimeout(() => {
+                    if (!group.classList.contains('picking')) return;
+                    syncCDWheelSelection(wheel);
+                }, 90);
+            });
+
+            for (let i = 0; i <= maxVal; i++) {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = 'cd-wheel-item';
+                item.dataset.value = i;
+                item._value = i;
+                item.innerHTML = createTimerSegHTML();
+                setTimerDigit(item, Math.floor(i / 10), i % 10);
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    setCDUnit(unit, i);
+                    closeCDWheels();
+                });
+                wheel.appendChild(item);
+            }
+
+            group.appendChild(wheel);
+            wheel._items = [...wheel.querySelectorAll('.cd-wheel-item')];
+            wheel._items.forEach(item => {
+                item._center = item.offsetTop + item.offsetHeight / 2;
+            });
+        }
+
+        cdGroups.forEach(group => {
+            buildCDWheel(group);
+
+            group.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (cdRunning) return;
+                const wasOpen = group.classList.contains('picking');
+                closeCDWheels();
+                if (wasOpen) return;
+
+                const unit = group.dataset.unit;
+                const currentVal = unit === 'hour' ? cdHour : unit === 'min' ? cdMin : cdSec;
+                const wheel = group.querySelector('.cd-wheel');
+                wheel.querySelectorAll('.cd-wheel-item').forEach(item => {
+                    item.classList.toggle('selected', Number(item.dataset.value) === currentVal);
+                });
+                group.classList.add('picking');
+                const selected = wheel.querySelector('.cd-wheel-item.selected');
+                if (selected) {
+                    wheel.scrollTop = selected.offsetTop - (wheel.clientHeight - selected.clientHeight) / 2;
+                    syncCDWheelSelection(wheel);
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.cd-group')) {
+                closeCDWheels();
+            }
+        });
+
+        function tickCountdown() {
+            const now = performance.now();
+            const elapsed = (now - cdLastTick) / 1000;
+            cdLastTick = now;
+            cdRemaining -= elapsed;
+
+            if (cdRemaining > -1) {
+                updateCDFromRemaining();
+                return;
+            }
+
+            updateCDOvertimeDisplay(Math.abs(cdRemaining) - 1);
+
+            if (!cdDisplayWrapper.classList.contains('hidden')) {
+                showCDOvertimeTransition();
+                cdRunning = false;
+                cdStartBtn.style.display = 'none';
+                cdResetBtn.disabled = false;
+            }
+        }
+
+        cdStartBtn.addEventListener('click', () => {
+            if (cdRunning) {
+                clearInterval(cdInterval);
+                cdRunning = false;
+                cdStartBtn.textContent = '继续';
+                return;
+            }
+
+            if (!cdRunning && cdRemaining > -1) {
+                cdRunning = true;
+                cdStartBtn.textContent = '暂停';
+                cdStartBtn.disabled = false;
+                cdResetBtn.disabled = false;
+                resetCDOvertimeView();
+                if (cdRemaining === cdTotal) {
+                    cdRemaining -= 1;
+                    updateCDFromRemaining();
+                }
+                cdLastTick = performance.now();
+                cdInterval = setInterval(tickCountdown, 40);
+            }
+        });
+
+        cdResetBtn.addEventListener('click', () => {
+            clearInterval(cdInterval);
+            cdRunning = false;
+            cdRemaining = cdTotal;
+            updateCDFromRemaining();
+            cdStartBtn.textContent = '开始';
+            cdStartBtn.style.display = '';
+            resetCDOvertimeView();
+            checkCDStartable();
+            cdResetBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>
