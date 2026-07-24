@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scienmicroit</title>
+    <link rel="icon" type="image/png" href="smile-round.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="flat-cursor" id="flat-cursor" aria-hidden="true">
+        <svg viewBox="0 0 22 24" focusable="false">
+            <path class="cursor-fill" d="M3.5 4.8C3.2 4.5 2.6 5 2.9 5.6l8.5 16c0.3 0.6 1.2 0.6 1.5 0l8.5-16c0.3-0.6-0.3-1.2-0.8-0.9L12.8 10.5c-0.3 0.1-0.6 0.1-0.9 0L3.5 4.8z"/>
+        </svg>
+    </div>
+
+    <div class="bg-animation">
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-2"></div>
+        <div class="bg-blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="layout">
+            <div class="profile-card glass">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="smile.png" alt="Scienmicroit">
+                    </div>
+                    <div>
+                        <div class="profile-name">Scienmicroit</div>
+                        <div class="profile-status">Developer</div>
+                    </div>
+                </div>
+                <div class="menu-label">菜单</div>
+                <div class="menu-shell">
+                    <div class="menu-indicator" aria-hidden="true"></div>
+                    <div class="menu-hover-indicator" aria-hidden="true"></div>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <a href="#home" class="menu-link active">
+                                <span class="menu-icon">🏠</span>
+                                <span class="menu-text">主页</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#projects" class="menu-link">
+                                <span class="menu-icon">⊞</span>
+                                <span class="menu-text">我的项目</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#about" class="menu-link">
+                                <span class="menu-icon">☺</span>
+                                <span class="menu-text">关于网站</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#share" class="menu-link">
+                                <span class="menu-icon">☆</span>
+                                <span class="menu-text">推荐分享</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#blogs" class="menu-link">
+                                <span class="menu-icon">⊛</span>
+                                <span class="menu-text">优秀博客</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="greeting-card glass">
+                <div class="greeting-avatar">💻</div>
+                <div class="greeting-text">下午好</div>
+                <div class="greeting-name">I'm Scienmicroit!</div>
+            </div>
+
+            <div class="time-card glass" id="time-card">
+                <div class="time-display" id="time"></div>
+            </div>
+
+            <div class="weather-card glass" id="weather-card">
+                <div class="weather-content" aria-live="polite">
+                    <div class="weather-icon" id="weather-icon" aria-hidden="true">--</div>
+                    <div class="weather-top">
+                        <div class="weather-location" id="weather-location">定位中</div>
+                        <div class="weather-temp" id="weather-temp">--°C</div>
+                    </div>
+                    <div class="weather-bottom">
+                        <div class="weather-condition" id="weather-condition">--</div>
+                        <div class="weather-updated" id="weather-updated">--:-- 更新</div>
+                    </div>
+                </div>
+                <div class="weather-error">位置信息获取失败</div>
+            </div>
+
+            <div class="calendar-card glass">
+                <div class="calendar-header">
+                    <span id="calendar-date"></span>
+                </div>
+                <div class="calendar-weekdays">
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                    <div class="weekday">日</div>
+                </div>
+                <div class="calendar-days" id="calendar-days"></div>
+            </div>
+
+            <div class="articles-card glass">
+                <div class="card-title">最新文章</div>
+                <div class="article-item">
+                    <div class="article-thumb">📝</div>
+                    <div class="article-info">
+                        <div class="article-title">深入理解 JavaScript 异步编程</div>
+                        <div class="article-desc">探索 Promise、async/await 的工作原理</div>
+                        <div class="article-date">2024/3/15</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="social-card glass">
+                <a href="https://github.com/Scienmicroit" class="social-link" target="_blank" rel="noopener noreferrer">
+                    <svg class="social-link-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                    Github
+                </a>
+                <a href="https://space.bilibili.com/493831046" class="social-link" target="_blank" rel="noopener noreferrer">
+                    <svg class="social-link-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.124.929.373.249.249.373.551.373.907 0 .355-.124.657-.373.906L17.813 4.653zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773H5.333zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z"/>
+                    </svg>
+                    哔哩哔哩
+                </a>
+                <a href="#" class="social-link">
+                    <svg class="social-link-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.5h-9v-1h9v1zm0-3h-9v-1h9v1zm0-3h-9v-1h9v1z"/>
+                    </svg>
+                    博客（无用）
+                </a>
+                <a href="mailto:1545126121@qq.com" class="social-link">
+                    <svg class="social-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="M22 4L12 13 2 4"/>
+                    </svg>
+                    电子邮件
+                </a>
+            </div>
+
+            <div class="recommend-card glass">
+                <div class="card-title">随机推荐</div>
+                <div class="recommend-icon">🐳</div>
+                <div class="recommend-title">Docker & YAML</div>
+                <div class="recommend-desc">容器化部署不再玄学。</div>
+                <div class="recommend-stats">Views: 32,940 Marks: 498</div>
+            </div>
+
+            <div class="music-card glass" id="music-card">
+                <div class="music-note" id="music-art">🎵</div>
+                <div class="music-info">
+                    <div class="music-heading">
+                        <div class="music-title" id="music-title">梦境寻踪</div>
+                        <button class="music-random" id="music-random" type="button" aria-label="随机切换歌曲" title="随机切换歌曲">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M16 3h5v5"></path>
+                                <path d="M4 20 21 3"></path>
+                                <path d="M21 16v5h-5"></path>
+                                <path d="m15 15 6 6"></path>
+                                <path d="M4 4l5 5"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="music-progress-shell" id="music-progress-shell">
+                        <div class="music-progress" id="music-progress" role="slider" tabindex="0" aria-label="歌曲进度" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+                            <div class="music-progress-bar" id="music-progress-bar"></div>
+                        </div>
+                    </div>
+                    <div class="music-time" id="music-time">0:00/--:--</div>
+                </div>
+                <button class="music-play" id="music-play" type="button" aria-label="播放音乐" aria-pressed="false">
+                    <span class="music-play-icon play" aria-hidden="true"></span>
+                    <span class="music-play-icon pause" aria-hidden="true"></span>
+                </button>
+                <div class="music-progress-expansion" id="music-progress-expansion" aria-hidden="true">
+                    <div class="music-progress-expansion-fill"></div>
+                </div>
+                <div class="music-dots" aria-hidden="true">
+                    <span class="music-dot active" data-track-dot="0"></span>
+                    <span class="music-dot" data-track-dot="1"></span>
+                </div>
+            </div>
+
+            <div class="likes-card glass" id="likes-card">
+                <span class="likes-heart" id="likes-heart">♥</span>
+                <span class="likes-count" id="likes-count">17247</span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="timer-page" id="timer-page">
+        <div class="timer-bg"></div>
+        <div class="timer-container glass" id="timer-container">
+            <div class="timer-clock-ghost" id="timer-clock-ghost"></div>
+            <div class="timer-content">
+                <button class="timer-close" id="timer-close">✕</button>
+                <h2 class="timer-title">计时器</h2>
+
+                <div class="timer-tabs">
+                    <button class="timer-tab active" data-tab="stopwatch">正计时</button>
+                    <button class="timer-tab" data-tab="countdown">倒计时</button>
+                </div>
+
+                <div class="timer-panel" id="stopwatch-panel">
+                    <div class="seg-timer-display" id="stopwatch-display"></div>
+                    <div class="stopwatch-btns">
+                        <button class="sw-btn" id="sw-start">开始</button>
+                        <button class="sw-btn" id="sw-reset" disabled>重置</button>
+                        <button class="sw-btn" id="sw-record" disabled>记录</button>
+                    </div>
+                </div>
+
+                <div class="timer-panel hidden" id="countdown-panel">
+                    <div class="cd-display-wrapper" id="cd-display-wrapper">
+                        <div class="cd-group" data-unit="hour">
+                            <div class="seg-timer-display" id="cd-seg-hour"></div>
+                            <span class="cd-group-label">时</span>
+                        </div>
+                        <div class="seg-timer-colon"><div class="seg-timer-dot"></div><div class="seg-timer-dot"></div></div>
+                        <div class="cd-group" data-unit="min">
+                            <div class="seg-timer-display" id="cd-seg-min"></div>
+                            <span class="cd-group-label">分</span>
+                        </div>
+                        <div class="seg-timer-colon"><div class="seg-timer-dot"></div><div class="seg-timer-dot"></div></div>
+                        <div class="cd-group" data-unit="sec">
+                            <div class="seg-timer-display" id="cd-seg-sec"></div>
+                            <span class="cd-group-label">秒</span>
+                        </div>
+                    </div>
+                    <div class="cd-overtime hidden" id="cd-overtime">
+                        <span class="cd-overtime-label">已超时：</span>
+                        <div class="cd-overtime-seg" id="cd-overtime-seg"></div>
+                    </div>
+                    <div class="stopwatch-btns">
+                        <button class="sw-btn" id="cd-start" disabled>开始</button>
+                        <button class="sw-btn" id="cd-reset" disabled>重置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="records-card glass" id="records-card">
+            <div class="records-title">记录</div>
+            <div class="records-list" id="records-list"></div>
+            <div class="records-scrollbar" id="records-scrollbar" aria-hidden="true">
+                <div class="records-scroll-thumb" id="records-scroll-thumb"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="calendar-page" id="calendar-page" aria-hidden="true">
+        <div class="calendar-page-bg"></div>
+        <div class="calendar-modal" id="calendar-modal" role="dialog" aria-modal="true" aria-label="日历">
+            <div class="calendar-ghost" id="calendar-ghost"></div>
+            <div class="calendar-expanded-content">
+                <button class="calendar-close" id="calendar-close" type="button" aria-label="关闭日历">✕</button>
+                <div class="calendar-expanded-header" id="calendar-expanded-header"></div>
+                <div class="calendar-expanded-weekdays">
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                    <div class="weekday">日</div>
+                </div>
+                <div class="calendar-expanded-days" id="calendar-expanded-days"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
